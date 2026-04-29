@@ -23,14 +23,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import ru.makoto.fefustore.CartState
 import ru.makoto.fefustore.Entity.Clothes
 import ru.makoto.fefustore.R
-import kotlin.math.max
 
 @Composable
 fun CounterButton(clothes: Clothes) {
-    val counter = remember { mutableStateOf(0) }
-    if (counter.value == 0) PriceButton(counter, clothes) else {
+    val counter = remember { mutableStateOf(CartState.getCount(clothes.id)) }
+
+    if (counter.value == 0) {
+        PriceButton(counter, clothes)
+    } else {
         Row(
             modifier = Modifier
                 .height(50.dp)
@@ -45,11 +48,14 @@ fun CounterButton(clothes: Clothes) {
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(50.dp)
-                    .clickable(onClick = {
-                        if (max(0, counter.value--) == 0) {
-                            //counter.value = 0
+                    .clickable {
+                        counter.value = maxOf(0, counter.value - 1)
+                        if (counter.value == 0) {
+                            CartState.cart.remove(clothes.id)
+                        } else {
+                            CartState.cart[clothes.id] = counter.value
                         }
-                    }),
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -67,9 +73,10 @@ fun CounterButton(clothes: Clothes) {
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(50.dp)
-                    .clickable(onClick = {
+                    .clickable {
                         counter.value++
-                    }),
+                        CartState.cart[clothes.id] = counter.value
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
