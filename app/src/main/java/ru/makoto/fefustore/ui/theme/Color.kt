@@ -2,6 +2,7 @@ package ru.makoto.fefustore.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+
 object AppColors {
     val BrownPrimary = Color(0xFF67493D)
     val BrownDark = Color(0xFF623A29)

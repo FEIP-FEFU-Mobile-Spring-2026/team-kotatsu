@@ -39,6 +39,7 @@ import ru.makoto.fefustore.Entity.Size
 import ru.makoto.fefustore.components.CategoryItem
 import ru.makoto.fefustore.ui.theme.AppColors
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardScreen(id: String, navController: NavController) {
