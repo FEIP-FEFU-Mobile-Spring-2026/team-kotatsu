@@ -24,6 +24,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,19 +33,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import ru.makoto.fefustore.Entity.Size
 import ru.makoto.fefustore.components.CategoryItem
 import ru.makoto.fefustore.ui.theme.AppColors
-
+import ru.makoto.fefustore.viewmodels.ProductsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CardScreen(id: String, navController: NavController) {
-    val item = itm[id.toInt()]
+fun CardScreen(id: String, navController: NavController, viewModel: ViewModel) {
+    val uiState by (viewModel as ProductsViewModel).uiState.collectAsState()
+
+    val item = uiState.clothes.find { it.id == id }
     val activeSize = remember { mutableStateOf<Size?>(null) }
     Scaffold(
         topBar = {
@@ -63,11 +70,11 @@ fun CardScreen(id: String, navController: NavController) {
                     horizontalArrangement = Arrangement.spacedBy(5.dp),
                     modifier = Modifier.horizontalScroll(rememberScrollState())
                 ) {
-                    item.sizes.forEach {
+                    item?.sizes?.forEach {
                         CategoryItem(
 
-                            it.toString(),
-                            isActive = activeSize.value.toString() != it.toString(),
+                            it.name.toString(),
+                            isActive = activeSize.value.toString() != it.name.toString(),
                             onClick = { activeSize.value = it }
                         )
                     }
@@ -79,7 +86,7 @@ fun CardScreen(id: String, navController: NavController) {
                         .height(50.dp)
                 ) {
                     Text(
-                        text = "Добавить в корзину - ${item.price}",
+                        text = "Добавить в корзину - ${item?.price ?: "Undefined Price"}",
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
@@ -89,13 +96,13 @@ fun CardScreen(id: String, navController: NavController) {
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                Image(
+                AsyncImage(
                     alignment = Alignment.Center,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .height(300.dp)
                         .fillMaxWidth(),
-                    bitmap = ImageBitmap.imageResource(item.img),
+                    model = item?.img,
                     contentDescription = "Picture"
                 )
                 Row(
@@ -106,7 +113,7 @@ fun CardScreen(id: String, navController: NavController) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = item.title,
+                        text = item?.title ?: "Undefined Title",
                         style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
@@ -121,7 +128,7 @@ fun CardScreen(id: String, navController: NavController) {
 
                 Text(
                     modifier = Modifier.padding(5.dp),
-                    text = item.longDescription,
+                    text = item?.longDescription ?: "Undefined Description",
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.Gray
                 )

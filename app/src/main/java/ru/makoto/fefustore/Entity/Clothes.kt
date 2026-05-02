@@ -1,22 +1,44 @@
 package ru.makoto.fefustore.Entity
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
+
+
+@Serializable
+data class ProductsData(
+    @SerialName("categories") val categories: List<Category>,
+    @SerialName("items") val products: List<Clothes>
+)
+
+@Serializable
 data class Clothes(
-    val id: Int,
-    val category: String,
-    val img: Int,
-    val title: String,
-    val description: String,
-    val price: Int,
-    val sizes: List<Size>,
-    val longDescription: String
+    val id: String,
+    @SerialName("name") val title: String,
+    @SerialName("shortDescription") val description: String,
+    val longDescription: String,
+    @SerialName("priceInKopecks") val price: Int,
+    @SerialName("imageUrl") val img: String,
+    @SerialName("categoryId") val category: String,
+    val sizes: List<Size>
 
 )
 
-enum class Size {
+@Serializable
+data class Size(
+    val id : String,
+    val name : SizeName
+)
+
+@Serializable
+enum class SizeName {
     XXL,
-    XS,
-    S,
-    M,
+    XL,
     L,
-    XL
+    M,
+    S,
+    XS,
+    XXS
 }
+
+
+// Добавлена глобальная viewModel которая сохраняет состояние между Activity см. в MainActivity

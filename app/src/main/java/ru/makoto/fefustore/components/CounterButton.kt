@@ -28,11 +28,12 @@ import ru.makoto.fefustore.R
 import ru.makoto.fefustore.ui.theme.AppColors
 
 @Composable
-fun CounterButton(clothes: Clothes) {
-    val counter = remember { mutableStateOf(CartState.getCount(clothes.id)) }
+fun CounterButton(clothes: Clothes, clothesList: List<Clothes>) {
+
+    val counter = remember { mutableStateOf(CartState.getCount(clothesList.indexOf(clothes))) }
 
     if (counter.value == 0) {
-        PriceButton(counter, clothes)
+        PriceButton(counter, clothes, clothesList)
     } else {
         Row(
             modifier = Modifier
@@ -51,9 +52,9 @@ fun CounterButton(clothes: Clothes) {
                     .clickable {
                         counter.value = maxOf(0, counter.value - 1)
                         if (counter.value == 0) {
-                            CartState.cart.remove(clothes.id)
+                            CartState.cart.remove(clothesList.indexOf(clothes))
                         } else {
-                            CartState.cart[clothes.id] = counter.value
+                            CartState.cart[clothesList.indexOf(clothes)] = counter.value
                         }
                     },
                 contentAlignment = Alignment.Center
@@ -75,7 +76,7 @@ fun CounterButton(clothes: Clothes) {
                     .width(50.dp)
                     .clickable {
                         counter.value++
-                        CartState.cart[clothes.id] = counter.value
+                        CartState.cart[clothesList.indexOf(clothes)] = counter.value
                     },
                 contentAlignment = Alignment.Center
             ) {

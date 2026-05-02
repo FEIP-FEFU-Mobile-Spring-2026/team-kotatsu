@@ -8,27 +8,24 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import ru.makoto.fefustore.Entity.Const
 import ru.makoto.fefustore.ui.theme.AppColors
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import ru.makoto.fefustore.Entity.Category
 
 @Composable
 fun CategoryPicker(
-    modifier: Modifier = Modifier,
-    currentCategory: MutableState<String>
+    modifier: Modifier,
+    categories: List<Category>,
+    currentCategory: String,
+    changeCategory: (Category) -> Unit
 ) {
-    val categories = Const.categories
-    val selectedIndex = categories.indexOf(currentCategory.value).coerceAtLeast(0)
 
     ScrollableTabRow(
-        selectedTabIndex = selectedIndex,
+        selectedTabIndex = categories.indexOf(categories.find { it.id == currentCategory }),
         modifier = modifier
             .fillMaxWidth()
             .height(50.dp),
@@ -36,17 +33,16 @@ fun CategoryPicker(
         indicator = {},
     ) {
         categories.forEachIndexed { index, category ->
-            val isActive = index == selectedIndex
-
+            val isActive = index == categories.indexOf(categories.find { it.id == currentCategory })
             Tab(
                 selected = isActive,
-                onClick = { currentCategory.value = category },
+                onClick = { changeCategory(category) },
                 modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp),
                 text = {
                     CategoryItem(
-                        title = category,
+                        title = category.name,
                         isActive = isActive,
-                        onClick = { currentCategory.value = category }
+                        onClick = { changeCategory(category) }
                     )
                 }
             )
@@ -70,10 +66,4 @@ fun CategoryItem(
     ) {
         Text(text = title)
     }
-}
-
-@Composable
-fun CategoryPickerPreview() {
-    val currentCategory = remember { mutableStateOf(Const.categories.firstOrNull() ?: "") }
-    CategoryPicker(currentCategory = currentCategory)
 }
