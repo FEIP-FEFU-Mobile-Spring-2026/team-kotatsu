@@ -3,6 +3,7 @@ package ru.makoto.fefustore.components
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -31,8 +32,7 @@ fun CategoryPicker(
         selectedTabIndex = selectedIndex,
         modifier = modifier
             .fillMaxWidth()
-            .height(42.dp),
-        edgePadding = 1.dp,
+            .height(50.dp),
         containerColor = Color.White,
         indicator = {},
     ) {
@@ -42,8 +42,7 @@ fun CategoryPicker(
             Tab(
                 selected = isActive,
                 onClick = { currentCategory.value = category },
-                modifier = Modifier
-                    .height(42.dp),
+                modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp),
                 text = {
                     CategoryItem(
                         title = category,
