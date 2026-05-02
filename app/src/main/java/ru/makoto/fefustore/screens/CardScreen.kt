@@ -37,6 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ru.makoto.fefustore.Entity.Size
 import ru.makoto.fefustore.components.CategoryItem
+import ru.makoto.fefustore.utils.PriceFormatter
+import ru.makoto.fefustore.ui.theme.AppColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,7 +79,7 @@ fun CardScreen(id: String, navController: NavController) {
                         .height(50.dp)
                 ) {
                     Text(
-                        text = "Добавить в корзину - ${item.price}",
+                        text = "Добавить в корзину - ${PriceFormatter.format(item.price)}",
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
@@ -112,7 +114,7 @@ fun CardScreen(id: String, navController: NavController) {
                     Icon(
                         imageVector = Icons.Default.Info,
                         contentDescription = "icon",
-                        tint = Color(0xFFA47764),
+                        tint = AppColors.GrayLight,
                         modifier = Modifier.size(40.dp)
                     )
                 }

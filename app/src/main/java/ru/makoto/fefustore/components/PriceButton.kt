@@ -13,6 +13,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ru.makoto.fefustore.CartState
 import ru.makoto.fefustore.Entity.Clothes
+import ru.makoto.fefustore.utils.PriceFormatter
+import ru.makoto.fefustore.ui.theme.AppColors
 
 @Composable
 fun PriceButton(counter: MutableState<Int>, clothes: Clothes) {
@@ -23,13 +25,13 @@ fun PriceButton(counter: MutableState<Int>, clothes: Clothes) {
         },
         Modifier.height(50.dp),
         colors = ButtonColors(
-            containerColor = Color(0xFFF6EFEB),
-            contentColor = Color(0xFF623A29),
+            containerColor = AppColors.BeigeLight,
+            contentColor = AppColors.BrownDark,
             disabledContainerColor = Color.LightGray,
             disabledContentColor = Color.LightGray,
         ),
         shape = RoundedCornerShape(5.dp)
     ) {
-        Text(clothes.price.toString(), fontWeight = FontWeight.ExtraBold)
+        Text(PriceFormatter.format(clothes.price), fontWeight = FontWeight.ExtraBold)
     }
 }
