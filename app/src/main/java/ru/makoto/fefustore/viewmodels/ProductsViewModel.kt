@@ -12,6 +12,7 @@ import ru.makoto.fefustore.Entity.Category
 import ru.makoto.fefustore.Entity.Clothes
 import ru.makoto.fefustore.Entity.ProductsData
 import kotlinx.serialization.json.Json
+import ru.makoto.fefustore.Entity.Cart
 
 
 class ProductsViewModel : ViewModel() {
@@ -21,12 +22,15 @@ class ProductsViewModel : ViewModel() {
 
     data class UiState(
         val currentCategory: String = "",
+        val currentTag: String = "New",
         val categories : List<Category> = listOf(),
-        val clothes: List<Clothes> = listOf()
+        val clothes: List<Clothes> = listOf(),
+        val cart: Cart = Cart
         )
 
     fun setCategory(category: String) {
         _uiState.update{ it -> it.copy(currentCategory = category) }
+        _uiState.update{ it -> it.copy(currentTag = "") }
     }
 
     fun setCategories(categories: List<Category>) {
@@ -35,6 +39,11 @@ class ProductsViewModel : ViewModel() {
 
     fun setClothes(clothes: List<Clothes>) {
         _uiState.update{ it -> it.copy(clothes = clothes) }
+    }
+
+    fun setCurrentTag(tag: String) {
+        _uiState.update{ it -> it.copy(currentTag = tag) }
+        _uiState.update{ it -> it.copy(currentCategory = "") }
     }
 
     fun loadData(jsonRawFile : Int, resources: Resources) {

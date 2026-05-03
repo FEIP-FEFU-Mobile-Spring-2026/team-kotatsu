@@ -22,15 +22,20 @@ fun MenuScreen(navController: NavController, viewModel: ViewModel = viewModel())
     val uiState by (viewModel as ProductsViewModel).uiState.collectAsState()
 
     Column {
-        CategoryPicker(modifier = Modifier, currentCategory = uiState.currentCategory, categories = uiState.categories) {
-            viewModel.setCategory(it.id)
-        }
+        CategoryPicker(
+            modifier = Modifier,
+            currentCategory = uiState.currentCategory,
+            categories = uiState.categories,
+            changeCategory = { category -> viewModel.setCategory(category.id) },
+            changeTag = { tag -> viewModel.setCurrentTag(tag) }
+        )
         LazyColumn {
-            items(uiState.clothes.filter { it.category == uiState.currentCategory }) { clothes ->
+            items(uiState.clothes.filter { (it.category == uiState.currentCategory && uiState.currentTag == "") || it.tags.containsAll(listOf(uiState.currentTag)) }) {
+                clothes ->
                 ClothCard(
                     clothes = clothes,
                     navController = navController,
-                    clothesList = uiState.clothes
+                    cart = uiState.cart
                 )
             }
         }

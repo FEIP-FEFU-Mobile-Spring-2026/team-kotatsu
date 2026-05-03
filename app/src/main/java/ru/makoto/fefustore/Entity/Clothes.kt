@@ -19,9 +19,11 @@ data class Clothes(
     @SerialName("priceInKopecks") val price: Int,
     @SerialName("imageUrl") val img: String,
     @SerialName("categoryId") val category: String,
-    val sizes: List<Size>
+    val sizes: List<Size>,
+    val tags: List<String>
 
 )
+
 
 @Serializable
 data class Size(

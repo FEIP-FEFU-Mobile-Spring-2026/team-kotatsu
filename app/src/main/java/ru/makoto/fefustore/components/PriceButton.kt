@@ -12,19 +12,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import ru.makoto.fefustore.CartState
 import ru.makoto.fefustore.Entity.Clothes
-import ru.makoto.fefustore.R
 
 
 @Composable
-fun PriceButton(counter: MutableState<Int>, clothes: Clothes, clothesList: List<Clothes>) {
+fun PriceButton(clothes: Clothes, onClick: () -> Unit) {
     Button(
-        onClick = {
-
-            counter.value++
-            CartState.cart[clothesList.indexOf(clothes)] = counter.value
-        },
+        onClick = onClick,
         Modifier.height(50.dp),
         colors = ButtonColors(
             containerColor = Color(0xFFF6EFEB),

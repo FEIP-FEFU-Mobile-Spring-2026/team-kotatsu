@@ -74,7 +74,7 @@ fun CardScreen(id: String, navController: NavController, viewModel: ViewModel) {
                         CategoryItem(
 
                             it.name.toString(),
-                            isActive = activeSize.value.toString() != it.name.toString(),
+                            isActive = (activeSize.value?.id ?: "") != it.id,
                             onClick = { activeSize.value = it }
                         )
                     }

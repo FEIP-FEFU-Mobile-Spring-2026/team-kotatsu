@@ -15,25 +15,22 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import ru.makoto.fefustore.CartState
 import ru.makoto.fefustore.Entity.Clothes
 import ru.makoto.fefustore.R
 import ru.makoto.fefustore.ui.theme.AppColors
 
 @Composable
-fun CounterButton(clothes: Clothes, clothesList: List<Clothes>) {
+fun CounterButton(clothes: Clothes, cartState: Map<String, Int>, addToCart: (String) -> Unit, removeFromCart: (String) -> Unit) {
 
-    val counter = remember { mutableStateOf(CartState.getCount(clothesList.indexOf(clothes))) }
-
-    if (counter.value == 0) {
-        PriceButton(counter, clothes, clothesList)
+    if ((cartState[clothes.id] ?: 0) == 0) {
+        PriceButton(clothes) {
+            addToCart(clothes.id)
+        }
     } else {
         Row(
             modifier = Modifier
@@ -50,12 +47,7 @@ fun CounterButton(clothes: Clothes, clothesList: List<Clothes>) {
                     .fillMaxHeight()
                     .width(50.dp)
                     .clickable {
-                        counter.value = maxOf(0, counter.value - 1)
-                        if (counter.value == 0) {
-                            CartState.cart.remove(clothesList.indexOf(clothes))
-                        } else {
-                            CartState.cart[clothesList.indexOf(clothes)] = counter.value
-                        }
+                        removeFromCart(clothes.id)
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -67,7 +59,7 @@ fun CounterButton(clothes: Clothes, clothesList: List<Clothes>) {
 
             Text(
                 modifier = Modifier.padding(horizontal = 20.dp),
-                text = counter.value.toString()
+                text = cartState[clothes.id].toString()
             )
 
             Box(
@@ -75,8 +67,7 @@ fun CounterButton(clothes: Clothes, clothesList: List<Clothes>) {
                     .fillMaxHeight()
                     .width(50.dp)
                     .clickable {
-                        counter.value++
-                        CartState.cart[clothesList.indexOf(clothes)] = counter.value
+                        addToCart(clothes.id)
                     },
                 contentAlignment = Alignment.Center
             ) {

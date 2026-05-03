@@ -14,6 +14,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,11 +26,13 @@ import androidx.navigation.NavController
 import ru.makoto.fefustore.Entity.Clothes
 import ru.makoto.fefustore.navigation.Destination
 import coil.compose.AsyncImage
+import ru.makoto.fefustore.Entity.Cart
 import ru.makoto.fefustore.R
 
 
 @Composable
-fun ClothCard(clothes: Clothes, clothesList: List<Clothes>, navController: NavController) {
+fun ClothCard(clothes: Clothes, navController: NavController, cart: Cart) {
+    val cartState by cart.cartItems.collectAsState()
 
     Card(
         modifier = Modifier.clickable(onClick = {
@@ -61,8 +65,12 @@ fun ClothCard(clothes: Clothes, clothesList: List<Clothes>, navController: NavCo
                     Text(clothes.title, fontWeight = FontWeight.Bold)
                     Text(clothes.description, color = Color.Gray)
                 }
-                CounterButton(clothes, clothesList)
-
+                CounterButton(
+                    clothes = clothes,
+                    cartState = cartState,
+                    addToCart = { it -> cart.addItem(it) },
+                    removeFromCart = { it -> cart.removeItem(it) }
+                )
             }
         }
     }

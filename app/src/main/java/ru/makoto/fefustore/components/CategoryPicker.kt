@@ -21,19 +21,32 @@ fun CategoryPicker(
     modifier: Modifier,
     categories: List<Category>,
     currentCategory: String,
-    changeCategory: (Category) -> Unit
+    changeCategory: (Category) -> Unit,
+    changeTag: (String) -> Unit
 ) {
 
     ScrollableTabRow(
-        selectedTabIndex = categories.indexOf(categories.find { it.id == currentCategory }),
+        selectedTabIndex = if (currentCategory == "") 0 else categories.indexOf(categories.find { it.id == currentCategory }) + 1,
         modifier = modifier
             .fillMaxWidth()
             .height(50.dp),
         containerColor = Color.White,
         indicator = {},
     ) {
+        Tab(
+            selected = currentCategory == "",
+            onClick = { changeTag("New") },
+            modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp),
+            text = {
+                CategoryItem(
+                    title = "Новинки",
+                    isActive = currentCategory == "",
+                    onClick = { changeTag("New") }
+                )
+            }
+        )
         categories.forEachIndexed { index, category ->
-            val isActive = index == categories.indexOf(categories.find { it.id == currentCategory })
+            val isActive = index + 1 == categories.indexOf(categories.find { it.id == currentCategory }) + 1
             Tab(
                 selected = isActive,
                 onClick = { changeCategory(category) },
