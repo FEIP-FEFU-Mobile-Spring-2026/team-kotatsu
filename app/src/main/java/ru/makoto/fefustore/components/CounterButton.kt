@@ -19,13 +19,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import ru.makoto.fefustore.CartState
 import ru.makoto.fefustore.Entity.Clothes
 import ru.makoto.fefustore.R
+import ru.makoto.fefustore.ui.theme.AppColors
 
 @Composable
 fun CounterButton(clothes: Clothes) {
@@ -38,7 +38,7 @@ fun CounterButton(clothes: Clothes) {
             modifier = Modifier
                 .height(50.dp)
                 .background(
-                    Color(0xFFE8E8E8),
+                    AppColors.GrayLight,
                     shape = RoundedCornerShape(5.dp)
                 ),
             verticalAlignment = Alignment.CenterVertically,

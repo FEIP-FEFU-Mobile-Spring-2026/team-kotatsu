@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import ru.makoto.fefustore.CartState
 import ru.makoto.fefustore.Entity.Clothes
 
+
 @Composable
 fun PriceButton(counter: MutableState<Int>, clothes: Clothes) {
     Button(
