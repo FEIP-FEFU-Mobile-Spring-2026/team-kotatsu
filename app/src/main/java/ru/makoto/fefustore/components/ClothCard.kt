@@ -14,24 +14,30 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ru.makoto.fefustore.Entity.Clothes
 import ru.makoto.fefustore.navigation.Destination
+import coil.compose.AsyncImage
+import ru.makoto.fefustore.Entity.Cart
+import ru.makoto.fefustore.R
 
 
 @Composable
-fun ClothCard(clothes: Clothes, navController: NavController) {
+fun ClothCard(clothes: Clothes, navController: NavController, cart: Cart) {
+    val cartState by cart.cartItems.collectAsState()
+
     Card(
         modifier = Modifier.clickable(onClick = {
             navController.navigate(
-                Destination.CARD(clothes.id.toString()).route,
+                Destination.CARD(clothes.id).route,
             )
         }),
         colors = CardDefaults.cardColors(containerColor = colorScheme.background)
@@ -42,9 +48,9 @@ fun ClothCard(clothes: Clothes, navController: NavController) {
                 .padding(20.dp)
                 .height(200.dp), verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
+            AsyncImage(
                 modifier = Modifier.weight(1f),
-                bitmap = ImageBitmap.imageResource(clothes.img),
+                model = clothes.img,
                 contentDescription = "Picture"
             )
             Column(
@@ -59,8 +65,12 @@ fun ClothCard(clothes: Clothes, navController: NavController) {
                     Text(clothes.title, fontWeight = FontWeight.Bold)
                     Text(clothes.description, color = Color.Gray)
                 }
-                CounterButton(clothes)
-
+                CounterButton(
+                    clothes = clothes,
+                    cartState = cartState,
+                    addToCart = { it -> cart.addItem(it) },
+                    removeFromCart = { it -> cart.removeItem(it) }
+                )
             }
         }
     }

@@ -1,6 +1,9 @@
 package ru.makoto.fefustore.Entity
 
+import kotlinx.serialization.Serializable
 
-object Const {
-    val categories = listOf("Пицца", "Комбо", "Салаты", "Закуски", "Пирожные", "Новинки", "Джинсы", "Футболки", "Шапки", "Костюмы")
-}
+@Serializable
+data class Category(
+    val id: String,
+    val name: String
+)
