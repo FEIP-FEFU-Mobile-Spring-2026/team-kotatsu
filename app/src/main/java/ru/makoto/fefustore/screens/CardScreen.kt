@@ -44,6 +44,7 @@ import ru.makoto.fefustore.Entity.Size
 import ru.makoto.fefustore.components.CategoryItem
 import ru.makoto.fefustore.ui.theme.AppColors
 import ru.makoto.fefustore.viewmodels.ProductsViewModel
+import ru.makoto.fefustore.utils.PriceFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,7 +87,7 @@ fun CardScreen(id: String, navController: NavController, viewModel: ViewModel) {
                         .height(50.dp)
                 ) {
                     Text(
-                        text = "Добавить в корзину - ${item?.price ?: "Undefined Price"}",
+                        text = "Добавить в корзину - ${item?.price?.let { PriceFormatter.format(it) } ?: "Undefined Price"}",
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }

@@ -13,7 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ru.makoto.fefustore.Entity.Clothes
-
+import ru.makoto.fefustore.utils.PriceFormatter
 
 @Composable
 fun PriceButton(clothes: Clothes, onClick: () -> Unit) {
@@ -28,6 +28,6 @@ fun PriceButton(clothes: Clothes, onClick: () -> Unit) {
         ),
         shape = RoundedCornerShape(5.dp)
     ) {
-        Text(clothes.price.toString(), fontWeight = FontWeight.ExtraBold)
+        Text(PriceFormatter.format(clothes.price).toString(), fontWeight = FontWeight.ExtraBold)
     }
 }

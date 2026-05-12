@@ -29,8 +29,9 @@ fun CategoryPicker(
         selectedTabIndex = if (currentCategory == "") 0 else categories.indexOf(categories.find { it.id == currentCategory }) + 1,
         modifier = modifier
             .fillMaxWidth()
-            .height(50.dp),
-        containerColor = Color.White,
+            .height(55.dp),
+        containerColor = AppColors.White,
+        edgePadding = 2.dp,
         indicator = {},
     ) {
         Tab(
@@ -74,7 +75,7 @@ fun CategoryItem(
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(
             containerColor = if (!isActive) AppColors.BrownPrimary else AppColors.GrayLight,
-            contentColor = if (!isActive) Color.White else Color.Black
+            contentColor = if (!isActive) AppColors.White else AppColors.Black
         ),
     ) {
         Text(text = title)
