@@ -5,17 +5,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import ru.makoto.fefustore.components.CategoryPicker
 import ru.makoto.fefustore.components.ClothCard
 import ru.makoto.fefustore.viewmodels.ProductsViewModel
-import androidx.compose.runtime.getValue
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun MenuScreen(navController: NavController, viewModel: ViewModel = viewModel()) {
@@ -27,7 +24,8 @@ fun MenuScreen(navController: NavController, viewModel: ViewModel = viewModel())
             currentCategory = uiState.currentCategory,
             categories = uiState.categories,
             changeCategory = { category -> viewModel.setCategory(category.id) },
-            changeTag = { tag -> viewModel.setCurrentTag(tag) }
+            changeTag = { tag -> viewModel.setCurrentTag(tag) },
+            title = uiState.currentTag
         )
         LazyColumn {
             items(uiState.clothes.filter { (it.category == uiState.currentCategory && uiState.currentTag == "") || it.tags.containsAll(listOf(uiState.currentTag)) }) {

@@ -1,6 +1,5 @@
 package ru.makoto.fefustore.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,10 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -43,8 +39,8 @@ import coil.compose.AsyncImage
 import ru.makoto.fefustore.Entity.Size
 import ru.makoto.fefustore.components.CategoryItem
 import ru.makoto.fefustore.ui.theme.AppColors
-import ru.makoto.fefustore.viewmodels.ProductsViewModel
 import ru.makoto.fefustore.utils.PriceFormatter
+import ru.makoto.fefustore.viewmodels.ProductsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
