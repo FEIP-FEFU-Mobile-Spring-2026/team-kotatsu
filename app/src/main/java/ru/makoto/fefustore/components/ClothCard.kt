@@ -1,6 +1,5 @@
 package ru.makoto.fefustore.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,15 +18,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import ru.makoto.fefustore.Entity.Clothes
-import ru.makoto.fefustore.navigation.Destination
 import coil.compose.AsyncImage
 import ru.makoto.fefustore.Entity.Cart
-import ru.makoto.fefustore.R
+import ru.makoto.fefustore.Entity.Clothes
+import ru.makoto.fefustore.navigation.Destination
 
 
 @Composable
