@@ -14,7 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import ru.makoto.fefustore.Entity.Category
+import ru.makoto.fefustore.Data.DTO.Category
 import ru.makoto.fefustore.ui.theme.AppColors
 
 @Composable

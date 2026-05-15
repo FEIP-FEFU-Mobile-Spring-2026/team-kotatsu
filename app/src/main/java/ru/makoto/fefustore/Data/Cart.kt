@@ -1,4 +1,4 @@
-package ru.makoto.fefustore.Entity
+package ru.makoto.fefustore.Data
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

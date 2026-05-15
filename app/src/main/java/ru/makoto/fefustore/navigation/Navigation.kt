@@ -15,6 +15,7 @@ import androidx.navigation.navArgument
 import ru.makoto.fefustore.screens.CardScreen
 import ru.makoto.fefustore.screens.CartScreen
 import ru.makoto.fefustore.screens.MenuScreen
+import ru.makoto.fefustore.viewmodels.ProductsViewModel
 
 sealed class Destination(
     var route: String, val label: String,
@@ -30,7 +31,7 @@ sealed class Destination(
 fun AppNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    viewModel: ViewModel
+    viewModel: ProductsViewModel
 ) {
     NavHost(
         navController = navController,

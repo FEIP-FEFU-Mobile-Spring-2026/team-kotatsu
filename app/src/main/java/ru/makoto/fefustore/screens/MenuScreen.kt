@@ -7,31 +7,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import ru.makoto.fefustore.components.CategoryPicker
 import ru.makoto.fefustore.components.ClothCard
 import ru.makoto.fefustore.viewmodels.ProductsViewModel
 
 @Composable
-fun MenuScreen(navController: NavController, viewModel: ViewModel = viewModel()) {
-    val uiState by (viewModel as ProductsViewModel).uiState.collectAsState()
+fun MenuScreen(navController: NavController, viewModel: ProductsViewModel) {
+    val uiState by viewModel.uiState.collectAsState()
+    val clothes by viewModel.clothes.collectAsState()
+    val categories by viewModel.categories.collectAsState()
 
     Column {
         CategoryPicker(
             modifier = Modifier,
             currentCategory = uiState.currentCategory,
-            categories = uiState.categories,
+            categories = categories,
             changeCategory = { category -> viewModel.setCategory(category.id) },
             changeTag = { tag -> viewModel.setCurrentTag(tag) },
             title = uiState.currentTag
         )
         LazyColumn {
-            items(uiState.clothes.filter { (it.category == uiState.currentCategory && uiState.currentTag == "") || it.tags.containsAll(listOf(uiState.currentTag)) }) {
-                clothes ->
+            items(clothes.filter { (it.category == uiState.currentCategory && uiState.currentTag == "") || it.tags?.containsAll(listOf(uiState.currentTag)) ?: false}) {
                 ClothCard(
-                    clothes = clothes,
+                    clothes = it,
                     navController = navController,
                     cart = uiState.cart
                 )

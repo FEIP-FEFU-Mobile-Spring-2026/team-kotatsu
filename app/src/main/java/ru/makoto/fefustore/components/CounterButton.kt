@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import ru.makoto.fefustore.Entity.Clothes
+import ru.makoto.fefustore.Data.DTO.Clothes
 import ru.makoto.fefustore.R
 import ru.makoto.fefustore.ui.theme.AppColors
 
