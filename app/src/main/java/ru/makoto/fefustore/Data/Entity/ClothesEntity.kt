@@ -29,6 +29,10 @@ data class ClothesEntity(
     val price: Int,
     val img: String,
     val categoryId: String,
+    val material: String,
+    val weight: String,
+    val season: String,
+    val countryOfOrigin: String
 )
 
 fun ClothesEntity.toClothes() : Clothes = Clothes(
@@ -38,5 +42,9 @@ fun ClothesEntity.toClothes() : Clothes = Clothes(
     longDescription = longDescription,
     price = price,
     img = img,
-    category = categoryId
+    category = categoryId,
+    material = material,
+    weight = weight,
+    season = season,
+    countryOfOrigin = countryOfOrigin
 )

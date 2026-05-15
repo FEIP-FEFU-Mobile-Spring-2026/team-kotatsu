@@ -13,6 +13,10 @@ data class Clothes(
     @SerialName("priceInKopecks") val price: Int,
     @SerialName("imageUrl") val img: String,
     @SerialName("categoryId") val category: String,
+    val material: String,
+    val weight: String,
+    val season: String,
+    val countryOfOrigin: String,
     var sizes: List<Size>? = null,
     var tags: List<String>? = null
 
@@ -25,6 +29,10 @@ fun Clothes.toEntity() : ClothesEntity = ClothesEntity(
     longDescription = longDescription,
     price = price,
     img = img,
-    categoryId = category
+    categoryId = category,
+    material = material,
+    weight = weight,
+    season = season,
+    countryOfOrigin = countryOfOrigin
 )
 

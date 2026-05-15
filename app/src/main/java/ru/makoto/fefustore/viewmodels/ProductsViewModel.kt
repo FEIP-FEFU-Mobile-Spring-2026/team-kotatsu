@@ -21,12 +21,11 @@ import ru.makoto.fefustore.Data.DTO.*
 import kotlinx.serialization.json.Json
 import ru.makoto.fefustore.Data.Cart
 import ru.makoto.fefustore.Data.Entity.TagEntity
-import ru.makoto.fefustore.Data.Entity.toClothes
 import ru.makoto.fefustore.Data.Repositories.StoreRepository
 import ru.makoto.fefustore.R
 import javax.inject.Inject
 
-// Та самая инъекция зависимости репозитория
+
 @HiltViewModel
 class ProductsViewModel @Inject constructor(
     private val repository: StoreRepository,
