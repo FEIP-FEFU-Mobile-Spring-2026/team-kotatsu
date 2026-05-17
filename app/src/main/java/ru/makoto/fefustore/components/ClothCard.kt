@@ -22,8 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import ru.makoto.fefustore.Entity.Cart
-import ru.makoto.fefustore.Entity.Clothes
+import ru.makoto.fefustore.Data.Cart
+import ru.makoto.fefustore.Data.DTO.Clothes
 import ru.makoto.fefustore.navigation.Destination
 
 

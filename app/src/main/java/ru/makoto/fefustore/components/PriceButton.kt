@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import ru.makoto.fefustore.Entity.Clothes
+import ru.makoto.fefustore.Data.DTO.Clothes
 import ru.makoto.fefustore.utils.PriceFormatter
 
 @Composable

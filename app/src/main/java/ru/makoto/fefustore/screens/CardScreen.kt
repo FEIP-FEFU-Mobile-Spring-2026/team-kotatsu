@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import ru.makoto.fefustore.Entity.Size
+import ru.makoto.fefustore.Data.DTO.*
 import ru.makoto.fefustore.components.CategoryItem
 import ru.makoto.fefustore.ui.theme.AppColors
 import ru.makoto.fefustore.utils.PriceFormatter
@@ -44,10 +44,11 @@ import ru.makoto.fefustore.viewmodels.ProductsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CardScreen(id: String, navController: NavController, viewModel: ViewModel) {
-    val uiState by (viewModel as ProductsViewModel).uiState.collectAsState()
+fun CardScreen(id: String, navController: NavController, viewModel: ProductsViewModel) {
+    val uiState by viewModel.uiState.collectAsState()
+    val clothes by viewModel.clothes.collectAsState()
 
-    val item = uiState.clothes.find { it.id == id }
+    val item = clothes.find { it.id == id }
     val activeSize = remember { mutableStateOf<Size?>(null) }
     Scaffold(
         topBar = {
@@ -77,7 +78,13 @@ fun CardScreen(id: String, navController: NavController, viewModel: ViewModel) {
                     }
                 }
                 Button(
-                    onClick = {}, shape = RoundedCornerShape(10.dp),
+                    onClick = {
+                        item?.let { item ->
+                            navController.popBackStack()
+                            uiState.cart.addItem(item.id)
+                            }
+                        },
+                    shape = RoundedCornerShape(10.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)

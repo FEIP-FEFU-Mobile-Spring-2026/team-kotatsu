@@ -13,9 +13,10 @@ import androidx.lifecycle.ViewModel
 import ru.makoto.fefustore.viewmodels.ProductsViewModel
 
 @Composable
-fun CartScreen(viewModel: ViewModel) {
-    val uiState by (viewModel as ProductsViewModel).uiState.collectAsState()
+fun CartScreen(viewModel: ProductsViewModel) {
+    val uiState by viewModel.uiState.collectAsState()
     val cardItems by uiState.cart.cartItems.collectAsState()
+    val clothes by viewModel.clothes.collectAsState()
 
     if (cardItems.isEmpty()) {
         Text(
@@ -26,7 +27,7 @@ fun CartScreen(viewModel: ViewModel) {
         LazyColumn(modifier = Modifier.padding(16.dp)) {
             items(cardItems.keys.toList()) { itemId ->
                 val count = cardItems[itemId] ?: 0
-                val product = uiState.clothes.find { it.id == itemId }
+                val product = clothes.find { it.id == itemId }
                 Text(
                     text = if (product != null) {
                         "${product.title} — $count шт."
