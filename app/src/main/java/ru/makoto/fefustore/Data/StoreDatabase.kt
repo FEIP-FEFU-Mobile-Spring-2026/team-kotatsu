@@ -12,9 +12,10 @@ import ru.makoto.fefustore.Data.Entity.*
         TagEntity::class,
         ClothesSizeEntity::class,
         ClothesTagEntity::class,
-        CartEntity::class
+        CartEntity::class,
+        SelectedCategoryEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class StoreDatabase : RoomDatabase() {
@@ -25,5 +26,6 @@ abstract class StoreDatabase : RoomDatabase() {
     abstract fun clothesSizeDAO(): ClothesSizeDAO
     abstract fun clothesTagDAO(): ClothesTagDAO
     abstract fun cartDAO(): CartDAO
+    abstract fun selectedCategoryDAO(): SelectedCategoryDAO
 
 }

@@ -42,4 +42,7 @@ object DatabaseModule {
 
     @Provides
     fun provideCartDAO(database: StoreDatabase) = database.cartDAO()
+
+    @Provides
+    fun selectedCategoryDAO(database: StoreDatabase) = database.selectedCategoryDAO()
 }

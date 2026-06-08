@@ -1,6 +1,7 @@
 package ru.makoto.fefustore.viewmodels
 
 import android.content.Context
+import androidx.compose.runtime.traceEventStart
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -9,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -90,14 +92,6 @@ class ProductsViewModel @Inject constructor(
         initialValue = emptyList()
     )
 
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
-
-    data class UiState(
-        val currentCategory: String = "",
-        val currentTag: String = "New"
-    )
-
     fun addToCart(clothesId: String) = viewModelScope.launch { repository.addItemInCart(clothesId) }
 
     fun removeFromCart(clothesId: String) = viewModelScope.launch { repository.removeItemFromCart(clothesId) }
@@ -108,19 +102,23 @@ class ProductsViewModel @Inject constructor(
         initialValue = 0
     )
 
-    fun getAllClothesInCart(): StateFlow<List<CartItem>> = repository.getAllClothesInCart().stateIn(
+    val clothesInCart: StateFlow<List<CartItem>> = repository.getAllClothesInCart().distinctUntilChanged().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
 
-    fun setCategory(category: String) {
-        _uiState.update{ it -> it.copy(currentCategory = category) }
-        _uiState.update{ it -> it.copy(currentTag = "") }
+    fun setCategory(categoryId: String?) = viewModelScope.launch {
+        categoryId?.let {
+            repository.selectCategory(categoryId = categoryId)
+        } ?: run {
+            repository.clearCategories()
+        }
     }
 
-    fun setCurrentTag(tag: String) {
-        _uiState.update{ it -> it.copy(currentTag = tag) }
-        _uiState.update{ it -> it.copy(currentCategory = "") }
-    }
+    val currentCategory: StateFlow<String?> = repository.getSelectedCategory().distinctUntilChanged().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = null
+    )
 }

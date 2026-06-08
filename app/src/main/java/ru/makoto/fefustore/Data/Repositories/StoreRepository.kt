@@ -36,7 +36,8 @@ class StoreRepository @Inject constructor(
     private val clothesSizeDAO: ClothesSizeDAO,
     private val clothesTagDAO: ClothesTagDAO,
     private val tagDAO: TagDAO,
-    private val cartDAO: CartDAO
+    private val cartDAO: CartDAO,
+    private val selectedCategoryDAO: SelectedCategoryDAO
 ) {
     fun getAllCategories(): Flow<List<Category>> = categoryDAO.getAll().map {
         it.map { categoryEntity ->
@@ -79,8 +80,17 @@ class StoreRepository @Inject constructor(
                 cartDAO.delete(cartItem[0].cart)
         }
     }
-
-    suspend fun addCategory(category: CategoryEntity) = categoryDAO.insert(category)
+    fun getSelectedCategory(): Flow<String?> = selectedCategoryDAO.getSelectedCategory().map {
+        if (it.isEmpty())
+            return@map null
+        return@map it[0].categoryId
+    }
+    suspend fun selectCategory(categoryId: String) = selectedCategoryDAO.selectCategory(categoryId)
+    suspend fun clearCategories() = selectedCategoryDAO.clearSelectedCategory()
+    suspend fun addCategory(category: CategoryEntity) {
+        categoryDAO.insert(category)
+        selectedCategoryDAO.insert(SelectedCategoryEntity(category.id, false))
+    }
     suspend fun addClothes(clothes: ClothesEntity) = clothesDAO.insert(clothes)
     suspend fun addTag(tag: TagEntity) = tagDAO.insert(tag)
 

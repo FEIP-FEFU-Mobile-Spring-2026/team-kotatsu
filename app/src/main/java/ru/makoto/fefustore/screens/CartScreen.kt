@@ -14,7 +14,7 @@ import ru.makoto.fefustore.viewmodels.ProductsViewModel
 
 @Composable
 fun CartScreen(viewModel: ProductsViewModel) {
-    val clothesInCart by viewModel.getAllClothesInCart().collectAsState()
+    val clothesInCart by viewModel.clothesInCart.collectAsState()
 
     if (clothesInCart.isEmpty()) {
         Text(

@@ -23,9 +23,10 @@ fun MenuScreen(
     navController: NavController,
     viewModel: ProductsViewModel,
 ) {
-    val uiState by viewModel.uiState.collectAsState()
     val clothes by viewModel.clothes.collectAsState()
     val categories by viewModel.categories.collectAsState()
+
+    val currentCategory by viewModel.currentCategory.collectAsState()
 
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
@@ -33,11 +34,9 @@ fun MenuScreen(
     Column {
         CategoryPicker(
             modifier = Modifier,
-            currentCategory = uiState.currentCategory,
+            currentCategory = currentCategory,
             categories = categories,
-            changeCategory = { category -> viewModel.setCategory(category.id) },
-            changeTag = { tag -> viewModel.setCurrentTag(tag) },
-            title = uiState.currentTag
+            changeCategory = { category -> viewModel.setCategory(category?.id) },
         )
 
         when {
@@ -58,9 +57,7 @@ fun MenuScreen(
             else -> {
                 LazyColumn {
                     items(clothes.filter {
-                        Log.d("TAG", "${it.tags.size}")
-                        (it.category == uiState.currentCategory && uiState.currentTag == "") ||
-                                it.tags.containsAll(listOf(uiState.currentTag))
+                        (currentCategory == null && it.tags.contains("New")) || (it.category == currentCategory)
                     }) {
 
                         ClothCard(
