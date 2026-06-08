@@ -15,27 +15,36 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import ru.makoto.fefustore.Entity.Clothes
+import kotlinx.coroutines.flow.StateFlow
+import ru.makoto.fefustore.Data.DTO.Clothes
 import ru.makoto.fefustore.R
-import kotlin.math.max
+import ru.makoto.fefustore.ui.theme.AppColors
 
 @Composable
-fun CounterButton(clothes: Clothes) {
-    val counter = remember { mutableStateOf(0) }
-    if (counter.value == 0) PriceButton(counter, clothes) else {
+fun CounterButton(
+    clothes: Clothes,
+    cartAmount: Int,
+    addToCart: (String) -> Unit,
+    removeFromCart: (String) -> Unit)
+{
+
+    if (cartAmount == 0) {
+        PriceButton(clothes) {
+            addToCart(clothes.id)
+        }
+    } else {
         Row(
             modifier = Modifier
                 .height(50.dp)
                 .background(
-                    Color(0xFFE8E8E8),
+                    AppColors.GrayLight,
                     shape = RoundedCornerShape(5.dp)
                 ),
             verticalAlignment = Alignment.CenterVertically,
@@ -45,11 +54,9 @@ fun CounterButton(clothes: Clothes) {
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(50.dp)
-                    .clickable(onClick = {
-                        if (max(0, counter.value--) == 0) {
-                            //counter.value = 0
-                        }
-                    }),
+                    .clickable {
+                        removeFromCart(clothes.id)
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -60,16 +67,16 @@ fun CounterButton(clothes: Clothes) {
 
             Text(
                 modifier = Modifier.padding(horizontal = 20.dp),
-                text = counter.value.toString()
+                text = cartAmount.toString()
             )
 
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(50.dp)
-                    .clickable(onClick = {
-                        counter.value++
-                    }),
+                    .clickable {
+                        addToCart(clothes.id)
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

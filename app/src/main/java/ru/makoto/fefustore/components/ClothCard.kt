@@ -1,6 +1,5 @@
 package ru.makoto.fefustore.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,24 +13,34 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import ru.makoto.fefustore.Entity.Clothes
+import coil.compose.AsyncImage
+import kotlinx.coroutines.flow.StateFlow
+import ru.makoto.fefustore.Data.DTO.Clothes
 import ru.makoto.fefustore.navigation.Destination
 
 
 @Composable
-fun ClothCard(clothes: Clothes, navController: NavController) {
+fun ClothCard(
+    clothes: Clothes,
+    navController: NavController,
+    cartAmount: StateFlow<Int>,
+    addToCart: (String) -> Unit,
+    removeFromCart: (String) -> Unit
+) {
+    val cartAmountState by cartAmount.collectAsState()
+
     Card(
         modifier = Modifier.clickable(onClick = {
             navController.navigate(
-                Destination.CARD(clothes.id.toString()).route,
+                Destination.CARD(clothes.id).route,
             )
         }),
         colors = CardDefaults.cardColors(containerColor = colorScheme.background)
@@ -42,9 +51,9 @@ fun ClothCard(clothes: Clothes, navController: NavController) {
                 .padding(20.dp)
                 .height(200.dp), verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
+            AsyncImage(
                 modifier = Modifier.weight(1f),
-                bitmap = ImageBitmap.imageResource(clothes.img),
+                model = clothes.img,
                 contentDescription = "Picture"
             )
             Column(
@@ -59,8 +68,12 @@ fun ClothCard(clothes: Clothes, navController: NavController) {
                     Text(clothes.title, fontWeight = FontWeight.Bold)
                     Text(clothes.description, color = Color.Gray)
                 }
-                CounterButton(clothes)
-
+                CounterButton(
+                    clothes = clothes,
+                    cartAmount = cartAmountState,
+                    addToCart = addToCart,
+                    removeFromCart = removeFromCart
+                )
             }
         }
     }

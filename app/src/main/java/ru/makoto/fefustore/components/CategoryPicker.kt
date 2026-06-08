@@ -1,53 +1,107 @@
 package ru.makoto.fefustore.components
 
+import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import ru.makoto.fefustore.Entity.Const
+import ru.makoto.fefustore.Data.DTO.Category
+import ru.makoto.fefustore.ui.theme.AppColors
 
 @Composable
 fun CategoryPicker(
     modifier: Modifier,
-    currentCategory: MutableState<String>
+    categories: List<Category>,
+    currentCategory: String?,
+    changeCategory: (Category?) -> Unit,
 ) {
 
-    Row(
-        Modifier
+    ScrollableTabRow(
+        selectedTabIndex = if (currentCategory == null) 0 else categories.indexOf(categories.find { it.id == currentCategory }) + 1,
+        modifier = modifier
             .fillMaxWidth()
-            .height(50.dp)
-            .background(color = Color.White)
-            .horizontalScroll(
-                rememberScrollState(),
-                reverseScrolling = true
-            ),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .height(55.dp),
+        containerColor = AppColors.White,
+        edgePadding = 2.dp,
+        indicator = {},
     ) {
-        Const.categories.forEach {
-            CategoryItem(it, currentCategory.value != it) {
-                currentCategory.value = it
 
+        Tab(
+            selected = currentCategory == null,
+            onClick = { changeCategory(null) },
+            selectedContentColor = AppColors.White,
+            unselectedContentColor = AppColors.Black,
+            modifier = Modifier
+                .padding(horizontal = 7.dp, vertical = 20.dp)
+                .clip(CircleShape)
+                .background(
+                    if (currentCategory == null)
+                        AppColors.BrownPrimary
+                    else
+                        AppColors.GrayLight
+                )
+//                    text = {
+//                CategoryItem(
+//                    title = "Новинки",
+//                    isActive = currentCategory == "",
+//                    onClick = { changeTag("New") }
+        ) {
+            Text(
+                text = "Новинки",
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
+            )
+        }
+
+        /*categories.forEachIndexed { index, category ->
+            val isActive =
+                index + 1 == categories.indexOf(categories.find { it.id == currentCategory }) + 1
+            Tab(
+                selected = isActive,
+                onClick = { changeCategory(category) },
+                modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp),
+                text = {
+                    CategoryItem(
+                        title = category.name,
+                        isActive = isActive,
+                        onClick = { changeCategory(category) }
+                    )
+                }
+            )
+        }*/
+        categories.forEach { category ->
+            val isActive = category.id == currentCategory
+            Tab(
+                selected = isActive,
+                onClick = { changeCategory(category) },
+                selectedContentColor = AppColors.White,
+                unselectedContentColor = AppColors.Black,
+                modifier = Modifier
+                    .padding(horizontal = 7.dp, vertical = 20.dp)
+                    .clip(CircleShape)
+                    .background(
+                        if (isActive)
+                            AppColors.BrownPrimary
+                        else
+                            AppColors.GrayLight
+                    )
+            ) {
+                Text(
+                    text = category.name,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
             }
         }
     }
-
 }
 
 @Composable
@@ -60,17 +114,11 @@ fun CategoryItem(
         onClick = onClick,
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (!isActive) Color(0xFF67493D) else Color(0xFFE8E8E8),
-            contentColor = if (!isActive) Color.White else Color.Black
-        )
+            containerColor = if (!isActive) AppColors.BrownPrimary else AppColors.GrayLight,
+            contentColor = if (!isActive) AppColors.White else AppColors.Black
+        ),
     ) {
-        Text(title)
+        Text(text = title)
     }
 }
 
-@Preview
-@Composable
-fun CategoryPicker1() {
-    val sds = remember { mutableStateOf("dddd") }
-    CategoryPicker(modifier = Modifier, currentCategory = sds)
-}
