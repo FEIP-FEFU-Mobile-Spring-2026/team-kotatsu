@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -37,7 +36,7 @@ class ProductsViewModel @Inject constructor(
     }
 
     fun fetchData() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
 
@@ -60,10 +59,10 @@ class ProductsViewModel @Inject constructor(
                 }
                 productsData.products.forEach { clothes ->
                     repository.addClothes(clothes.toEntity())
-                    clothes.sizes?.forEach { size ->
+                    clothes.sizes.forEach { size ->
                         repository.addClothesSize(size.toEntity(clothes.id))
                     }
-                    clothes.tags?.forEach { tag ->
+                    clothes.tags.forEach { tag ->
                         repository.setClothesTag(
                             clothes.toEntity(),
                             TagEntity(tags.indexOf(tag).toString(), tag)
@@ -96,8 +95,23 @@ class ProductsViewModel @Inject constructor(
 
     data class UiState(
         val currentCategory: String = "",
-        val currentTag: String = "New",
-        val cart: Cart = Cart
+        val currentTag: String = "New"
+    )
+
+    fun addToCart(clothesId: String) = viewModelScope.launch { repository.addItemInCart(clothesId) }
+
+    fun removeFromCart(clothesId: String) = viewModelScope.launch { repository.removeItemFromCart(clothesId) }
+
+    fun getCartAmount(clothesId: String): StateFlow<Int> = repository.getCartAmount(clothesId).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = 0
+    )
+
+    fun getAllClothesInCart(): StateFlow<List<CartItem>> = repository.getAllClothesInCart().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
     )
 
     fun setCategory(category: String) {

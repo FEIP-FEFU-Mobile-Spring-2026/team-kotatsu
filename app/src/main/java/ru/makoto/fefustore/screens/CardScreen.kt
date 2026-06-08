@@ -81,7 +81,7 @@ fun CardScreen(id: String, navController: NavController, viewModel: ProductsView
                     onClick = {
                         item?.let { item ->
                             navController.popBackStack()
-                            uiState.cart.addItem(item.id)
+                            viewModel.addToCart(item.id)
                             }
                         },
                     shape = RoundedCornerShape(10.dp),

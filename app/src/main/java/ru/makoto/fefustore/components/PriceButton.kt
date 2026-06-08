@@ -26,6 +26,6 @@ fun PriceButton(clothes: Clothes, onClick: () -> Unit) {
         ),
         shape = RoundedCornerShape(5.dp)
     ) {
-        Text(PriceFormatter.format(clothes.price).toString(), fontWeight = FontWeight.ExtraBold)
+        Text(PriceFormatter.format(clothes.price), fontWeight = FontWeight.ExtraBold)
     }
 }

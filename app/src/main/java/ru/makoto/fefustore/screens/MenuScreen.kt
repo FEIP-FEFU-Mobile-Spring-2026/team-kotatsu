@@ -1,5 +1,6 @@
 package ru.makoto.fefustore.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -18,7 +19,10 @@ import ru.makoto.fefustore.components.ErrorState
 import ru.makoto.fefustore.viewmodels.ProductsViewModel
 
 @Composable
-fun MenuScreen(navController: NavController, viewModel: ProductsViewModel) {
+fun MenuScreen(
+    navController: NavController,
+    viewModel: ProductsViewModel,
+) {
     val uiState by viewModel.uiState.collectAsState()
     val clothes by viewModel.clothes.collectAsState()
     val categories by viewModel.categories.collectAsState()
@@ -54,13 +58,18 @@ fun MenuScreen(navController: NavController, viewModel: ProductsViewModel) {
             else -> {
                 LazyColumn {
                     items(clothes.filter {
+                        Log.d("TAG", "${it.tags.size}")
                         (it.category == uiState.currentCategory && uiState.currentTag == "") ||
-                                (it.tags?.containsAll(listOf(uiState.currentTag)) ?: false)
+                                it.tags.containsAll(listOf(uiState.currentTag))
                     }) {
+
                         ClothCard(
                             clothes = it,
                             navController = navController,
-                            cart = uiState.cart
+                            // можно потом предзагружать
+                            cartAmount = viewModel.getCartAmount(it.id),
+                            addToCart = { clothesId: String -> viewModel.addToCart(clothesId) },
+                            removeFromCart = { clothesId: String -> viewModel.removeFromCart(clothesId) }
                         )
                     }
                 }

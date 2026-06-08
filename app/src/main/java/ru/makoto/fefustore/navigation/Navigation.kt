@@ -6,7 +6,6 @@ import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -38,7 +37,7 @@ fun AppNavHost(
         startDestination = Destination.MENU.route,
         modifier = modifier
     ) {
-        composable(Destination.MENU.route) { MenuScreen(navController, viewModel) }
+        composable(Destination.MENU.route) { MenuScreen(navController, viewModel,) }
         composable(Destination.CART.route) { CartScreen(viewModel) }
 
         composable(
