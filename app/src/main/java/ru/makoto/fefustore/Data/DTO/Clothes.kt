@@ -17,8 +17,8 @@ data class Clothes(
     val weight: String,
     val season: String,
     val countryOfOrigin: String,
-    var sizes: List<Size>? = null,
-    var tags: List<String>? = null
+    var sizes: List<Size>,
+    var tags: List<String>
 
 )
 

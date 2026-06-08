@@ -5,6 +5,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import ru.makoto.fefustore.Data.DTO.Clothes
+import ru.makoto.fefustore.Data.DTO.Size
 
 @Entity(
     tableName = "clothes",
@@ -35,7 +36,7 @@ data class ClothesEntity(
     val countryOfOrigin: String
 )
 
-fun ClothesEntity.toClothes() : Clothes = Clothes(
+fun ClothesEntity.toClothes(sizes: List<Size>, tags: List<String>) : Clothes = Clothes(
     id = id,
     title = title,
     description = description,
@@ -46,5 +47,7 @@ fun ClothesEntity.toClothes() : Clothes = Clothes(
     material = material,
     weight = weight,
     season = season,
-    countryOfOrigin = countryOfOrigin
+    countryOfOrigin = countryOfOrigin,
+    sizes = sizes,
+    tags = tags
 )

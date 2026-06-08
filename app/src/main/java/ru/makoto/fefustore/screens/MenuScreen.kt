@@ -1,5 +1,6 @@
 package ru.makoto.fefustore.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -18,10 +19,14 @@ import ru.makoto.fefustore.components.ErrorState
 import ru.makoto.fefustore.viewmodels.ProductsViewModel
 
 @Composable
-fun MenuScreen(navController: NavController, viewModel: ProductsViewModel) {
-    val uiState by viewModel.uiState.collectAsState()
+fun MenuScreen(
+    navController: NavController,
+    viewModel: ProductsViewModel,
+) {
     val clothes by viewModel.clothes.collectAsState()
     val categories by viewModel.categories.collectAsState()
+
+    val currentCategory by viewModel.currentCategory.collectAsState()
 
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
@@ -29,11 +34,9 @@ fun MenuScreen(navController: NavController, viewModel: ProductsViewModel) {
     Column {
         CategoryPicker(
             modifier = Modifier,
-            currentCategory = uiState.currentCategory,
+            currentCategory = currentCategory,
             categories = categories,
-            changeCategory = { category -> viewModel.setCategory(category.id) },
-            changeTag = { tag -> viewModel.setCurrentTag(tag) },
-            title = uiState.currentTag
+            changeCategory = { category -> viewModel.setCategory(category?.id) },
         )
 
         when {
@@ -54,13 +57,16 @@ fun MenuScreen(navController: NavController, viewModel: ProductsViewModel) {
             else -> {
                 LazyColumn {
                     items(clothes.filter {
-                        (it.category == uiState.currentCategory && uiState.currentTag == "") ||
-                                (it.tags?.containsAll(listOf(uiState.currentTag)) ?: false)
+                        (currentCategory == null && it.tags.contains("New")) || (it.category == currentCategory)
                     }) {
+
                         ClothCard(
                             clothes = it,
                             navController = navController,
-                            cart = uiState.cart
+                            // можно потом предзагружать
+                            cartAmount = viewModel.getCartAmount(it.id),
+                            addToCart = { clothesId: String -> viewModel.addToCart(clothesId) },
+                            removeFromCart = { clothesId: String -> viewModel.removeFromCart(clothesId) }
                         )
                     }
                 }

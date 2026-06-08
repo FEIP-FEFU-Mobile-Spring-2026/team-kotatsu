@@ -22,14 +22,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import ru.makoto.fefustore.Data.Cart
+import kotlinx.coroutines.flow.StateFlow
 import ru.makoto.fefustore.Data.DTO.Clothes
 import ru.makoto.fefustore.navigation.Destination
 
 
 @Composable
-fun ClothCard(clothes: Clothes, navController: NavController, cart: Cart) {
-    val cartState by cart.cartItems.collectAsState()
+fun ClothCard(
+    clothes: Clothes,
+    navController: NavController,
+    cartAmount: StateFlow<Int>,
+    addToCart: (String) -> Unit,
+    removeFromCart: (String) -> Unit
+) {
+    val cartAmountState by cartAmount.collectAsState()
 
     Card(
         modifier = Modifier.clickable(onClick = {
@@ -64,9 +70,9 @@ fun ClothCard(clothes: Clothes, navController: NavController, cart: Cart) {
                 }
                 CounterButton(
                     clothes = clothes,
-                    cartState = cartState,
-                    addToCart = { it -> cart.addItem(it) },
-                    removeFromCart = { it -> cart.removeItem(it) }
+                    cartAmount = cartAmountState,
+                    addToCart = addToCart,
+                    removeFromCart = removeFromCart
                 )
             }
         }

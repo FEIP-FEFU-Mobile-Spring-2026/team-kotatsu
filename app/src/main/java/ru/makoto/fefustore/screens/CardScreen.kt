@@ -45,7 +45,6 @@ import ru.makoto.fefustore.viewmodels.ProductsViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardScreen(id: String, navController: NavController, viewModel: ProductsViewModel) {
-    val uiState by viewModel.uiState.collectAsState()
     val clothes by viewModel.clothes.collectAsState()
 
     val item = clothes.find { it.id == id }
@@ -81,7 +80,7 @@ fun CardScreen(id: String, navController: NavController, viewModel: ProductsView
                     onClick = {
                         item?.let { item ->
                             navController.popBackStack()
-                            uiState.cart.addItem(item.id)
+                            viewModel.addToCart(item.id)
                             }
                         },
                     shape = RoundedCornerShape(10.dp),

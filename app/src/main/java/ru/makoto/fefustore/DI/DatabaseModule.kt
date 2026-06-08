@@ -26,25 +26,23 @@ object DatabaseModule {
             .build()
     }
     @Provides
-    fun provideCategoryDAO(database: StoreDatabase): CategoryDAO {
-        return database.categoryDAO()
-    }
+    fun provideCategoryDAO(database: StoreDatabase) = database.categoryDAO()
 
     @Provides
-    fun provideClothesDAO(database: StoreDatabase): ClothesDAO {
-        return database.clothesDAO()
-    }
+    fun provideClothesDAO(database: StoreDatabase) = database.clothesDAO()
 
     @Provides
-    fun provideTagDAO(database: StoreDatabase): TagDAO {
-        return database.tagDAO()
-    }
+    fun provideTagDAO(database: StoreDatabase) = database.tagDAO()
+
     @Provides
-    fun provideClothesSizeDAO(database: StoreDatabase): ClothesSizeDAO {
-        return database.clothesSizeDAO()
-    }
+    fun provideClothesSizeDAO(database: StoreDatabase) = database.clothesSizeDAO()
+
     @Provides
-    fun provideClothesTagDAO(database: StoreDatabase): ClothesTagDAO {
-        return database.clothesTagDAO()
-    }
+    fun provideClothesTagDAO(database: StoreDatabase) = database.clothesTagDAO()
+
+    @Provides
+    fun provideCartDAO(database: StoreDatabase) = database.cartDAO()
+
+    @Provides
+    fun selectedCategoryDAO(database: StoreDatabase) = database.selectedCategoryDAO()
 }

@@ -1,5 +1,6 @@
 package ru.makoto.fefustore.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,15 +22,12 @@ import ru.makoto.fefustore.ui.theme.AppColors
 fun CategoryPicker(
     modifier: Modifier,
     categories: List<Category>,
-    currentCategory: String,
-    changeCategory: (Category) -> Unit,
-    changeTag: (String) -> Unit,
-
-    title: String,
+    currentCategory: String?,
+    changeCategory: (Category?) -> Unit,
 ) {
 
     ScrollableTabRow(
-        selectedTabIndex = if (currentCategory == "") 0 else categories.indexOf(categories.find { it.id == currentCategory }) + 1,
+        selectedTabIndex = if (currentCategory == null) 0 else categories.indexOf(categories.find { it.id == currentCategory }) + 1,
         modifier = modifier
             .fillMaxWidth()
             .height(55.dp),
@@ -39,15 +37,15 @@ fun CategoryPicker(
     ) {
 
         Tab(
-            selected = currentCategory == "",
-            onClick = { changeTag("New") },
+            selected = currentCategory == null,
+            onClick = { changeCategory(null) },
             selectedContentColor = AppColors.White,
             unselectedContentColor = AppColors.Black,
             modifier = Modifier
                 .padding(horizontal = 7.dp, vertical = 20.dp)
                 .clip(CircleShape)
                 .background(
-                    if (currentCategory == "")
+                    if (currentCategory == null)
                         AppColors.BrownPrimary
                     else
                         AppColors.GrayLight

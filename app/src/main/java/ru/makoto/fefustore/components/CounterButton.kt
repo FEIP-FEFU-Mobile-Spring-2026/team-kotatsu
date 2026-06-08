@@ -15,19 +15,27 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.StateFlow
 import ru.makoto.fefustore.Data.DTO.Clothes
 import ru.makoto.fefustore.R
 import ru.makoto.fefustore.ui.theme.AppColors
 
 @Composable
-fun CounterButton(clothes: Clothes, cartState: Map<String, Int>, addToCart: (String) -> Unit, removeFromCart: (String) -> Unit) {
+fun CounterButton(
+    clothes: Clothes,
+    cartAmount: Int,
+    addToCart: (String) -> Unit,
+    removeFromCart: (String) -> Unit)
+{
 
-    if ((cartState[clothes.id] ?: 0) == 0) {
+    if (cartAmount == 0) {
         PriceButton(clothes) {
             addToCart(clothes.id)
         }
@@ -59,7 +67,7 @@ fun CounterButton(clothes: Clothes, cartState: Map<String, Int>, addToCart: (Str
 
             Text(
                 modifier = Modifier.padding(horizontal = 20.dp),
-                text = cartState[clothes.id].toString()
+                text = cartAmount.toString()
             )
 
             Box(
