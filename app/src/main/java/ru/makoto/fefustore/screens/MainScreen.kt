@@ -9,9 +9,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ru.makoto.fefustore.components.CustomBottomBar
 import ru.makoto.fefustore.navigation.AppNavHost
+import ru.makoto.fefustore.viewmodels.ProductsViewModel
 
 @Composable
-fun MainScreen() {
+fun MainScreen(viewModel: ProductsViewModel) {
     val navController = rememberNavController()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -26,6 +27,7 @@ fun MainScreen() {
     ) { paddingValues ->
         AppNavHost(
             navController = navController,
+            viewModel = viewModel,
             modifier = Modifier.padding(paddingValues)
         )
     }
