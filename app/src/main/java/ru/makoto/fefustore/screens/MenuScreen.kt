@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -40,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -67,7 +69,7 @@ fun MenuScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
     var selectedClothes by remember { mutableStateOf<Clothes?>(null) }
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var activeSize by remember(selectedClothes?.id) { mutableStateOf<Size?>(null) }
 
     Column {
@@ -143,13 +145,13 @@ fun MenuScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .fillMaxHeight(0.85f)
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                // Блок с контентом, который скроллится
                 Column(
                     modifier = Modifier
+                        .weight(1f)
                         .verticalScroll(rememberScrollState())
-                        .weight(weight = 1f, fill = false)
                 ) {
                     if (item.tags.isNotEmpty()) {
                         Row(
@@ -188,12 +190,17 @@ fun MenuScreen(
                             text = item.title,
                             style = MaterialTheme.typography.headlineLarge,
                             fontWeight = FontWeight.Bold,
-                            color = Color.Black
+                            color = Color.Black,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 16.dp)
                         )
                         Icon(
                             imageVector = Icons.Default.Info,
                             contentDescription = "Характеристики",
-                            tint = AppColors.BrownPrimary,
+                            tint = Color(0xFF6A4E46),
                             modifier = Modifier
                                 .size(40.dp)
                                 .clickable { showInfoDialog = true }
@@ -207,7 +214,6 @@ fun MenuScreen(
                     )
                 }
 
-                // Блок выбора размера и кнопки всегда внизу
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()

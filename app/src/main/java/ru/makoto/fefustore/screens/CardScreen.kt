@@ -147,11 +147,11 @@ fun CardScreen(id: String, navController: NavController, viewModel: ProductsView
                     )
                     Icon(
                         imageVector = Icons.Default.Info,
-                        contentDescription = "icon",
-                        tint = AppColors.GrayLight,
+                        contentDescription = "Характеристики",
+                        tint = Color(0xFF6A4E46),
                         modifier = Modifier
                             .size(40.dp)
-                            .clickable { showInfoDialog = true } // Открытие попапа с инфо
+                            .clickable { showInfoDialog = true }
                     )
                 }
 
