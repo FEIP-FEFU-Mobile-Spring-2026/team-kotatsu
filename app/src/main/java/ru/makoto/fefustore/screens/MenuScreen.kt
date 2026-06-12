@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,13 +19,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -70,7 +67,7 @@ fun MenuScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
     var selectedClothes by remember { mutableStateOf<Clothes?>(null) }
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val sheetState = rememberModalBottomSheetState()
     var activeSize by remember(selectedClothes?.id) { mutableStateOf<Size?>(null) }
 
     Column {
@@ -148,16 +145,15 @@ fun MenuScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
+                // Блок с контентом, который скроллится
                 Column(
                     modifier = Modifier
-                        .weight(1f, fill = false)
                         .verticalScroll(rememberScrollState())
+                        .weight(weight = 1f, fill = false)
                 ) {
                     if (item.tags.isNotEmpty()) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
+                            modifier = Modifier.padding(vertical = 8.dp),
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             item.tags.forEach { tag ->
@@ -166,36 +162,21 @@ fun MenuScreen(
                                         .background(AppColors.BrownPrimary, shape = CircleShape)
                                         .padding(horizontal = 12.dp, vertical = 6.dp)
                                 ) {
-                                    Text(
-                                        text = tag,
-                                        color = Color.White,
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
+                                    Text(text = tag, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                                 }
                             }
                         }
                     }
-                    Box(
+
+                    AsyncImage(
+                        model = item.img,
+                        contentDescription = "Picture",
+                        contentScale = ContentScale.Fit,
                         modifier = Modifier
-                            .height(200.dp) // Размер слайдера уменьшен
+                            .height(200.dp)
                             .fillMaxWidth()
-                    ) {
-                        AsyncImage(
-                            alignment = Alignment.Center,
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier.fillMaxSize(),
-                            model = item.img,
-                            contentDescription = "Picture"
-                        )
-                        // Кнопка закрытия bottom sheet
-                        IconButton(
-                            onClick = { selectedClothes = null },
-                            modifier = Modifier.align(Alignment.TopEnd)
-                        ) {
-                            Icon(Icons.Default.Close, contentDescription = "Закрыть", tint = AppColors.BrownPrimary)
-                        }
-                    }
+                    )
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -211,20 +192,22 @@ fun MenuScreen(
                         )
                         Icon(
                             imageVector = Icons.Default.Info,
-                            contentDescription = "icon",
-                            tint = AppColors.GrayLight,
+                            contentDescription = "Характеристики",
+                            tint = AppColors.BrownPrimary,
                             modifier = Modifier
                                 .size(40.dp)
-                                .clickable { showInfoDialog = true } // Открытие попапа с инфо
+                                .clickable { showInfoDialog = true }
                         )
                     }
                     Text(
-                        modifier = Modifier.padding(vertical = 4.dp),
                         text = item.longDescription,
                         style = MaterialTheme.typography.bodyLarge,
-                        color = Color.Gray
+                        color = Color.Gray,
+                        modifier = Modifier.padding(vertical = 4.dp)
                     )
                 }
+
+                // Блок выбора размера и кнопки всегда внизу
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
