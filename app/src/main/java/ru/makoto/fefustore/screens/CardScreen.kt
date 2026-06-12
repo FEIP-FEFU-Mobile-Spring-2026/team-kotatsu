@@ -39,7 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import ru.makoto.fefustore.Data.DTO.*
+import ru.makoto.fefustore.Data.DTO.Size
 import ru.makoto.fefustore.components.CategoryItem
 import ru.makoto.fefustore.ui.theme.AppColors
 import ru.makoto.fefustore.utils.PriceFormatter
@@ -75,7 +75,7 @@ fun CardScreen(id: String, navController: NavController, viewModel: ProductsView
     }
 
     Scaffold(
-        topBar = {
+       topBar = {
             TopAppBar(title = {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(Icons.Default.ArrowBack, "icon")
@@ -127,7 +127,7 @@ fun CardScreen(id: String, navController: NavController, viewModel: ProductsView
                     alignment = Alignment.Center,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
-                        .height(200.dp) // Уменьшили размер слайдера
+                        .height(200.dp)
                         .fillMaxWidth(),
                     model = item?.img,
                     contentDescription = "Picture"
@@ -148,7 +148,7 @@ fun CardScreen(id: String, navController: NavController, viewModel: ProductsView
                     Icon(
                         imageVector = Icons.Default.Info,
                         contentDescription = "Характеристики",
-                        tint = Color(0xFF6A4E46),
+                        tint = AppColors.BrownPrimary,
                         modifier = Modifier
                             .size(40.dp)
                             .clickable { showInfoDialog = true }

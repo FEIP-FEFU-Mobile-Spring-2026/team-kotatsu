@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,11 +21,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -89,12 +92,14 @@ fun MenuScreen(
                     }
                 }
             }
+
             errorMessage != null -> {
                 ErrorState(
                     message = errorMessage ?: "Неизвестная ошибка",
                     onRetry = { viewModel.fetchData() }
                 )
             }
+
             else -> {
                 LazyColumn {
                     items(clothes.filter {
@@ -105,7 +110,11 @@ fun MenuScreen(
                             onCardClick = { selectedClothes = item },
                             cartAmount = viewModel.getCartAmount(item.id),
                             addToCart = { clothesId: String -> viewModel.addToCart(clothesId) },
-                            removeFromCart = { clothesId: String -> viewModel.removeFromCart(clothesId) }
+                            removeFromCart = { clothesId: String ->
+                                viewModel.removeFromCart(
+                                    clothesId
+                                )
+                            }
                         )
                     }
                 }
@@ -153,31 +162,53 @@ fun MenuScreen(
                         .weight(1f)
                         .verticalScroll(rememberScrollState())
                 ) {
-                    if (item.tags.isNotEmpty()) {
-                        Row(
-                            modifier = Modifier.padding(vertical = 8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            item.tags.forEach { tag ->
-                                Box(
-                                    modifier = Modifier
-                                        .background(AppColors.BrownPrimary, shape = CircleShape)
-                                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                                ) {
-                                    Text(text = tag, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    IconButton(
+                        onClick = { selectedClothes = null },
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Назад",
+                            tint = Color.Black
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                    ) {
+                        AsyncImage(
+                            model = item.img,
+                            contentDescription = "Picture",
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier.fillMaxSize()
+                        )
+
+                        if (item.tags.isNotEmpty()) {
+                            Row(
+                                modifier = Modifier
+                                    .align(Alignment.TopStart)
+                                    .padding(8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                item.tags.forEach { tag ->
+                                    Box(
+                                        modifier = Modifier
+                                            .background(AppColors.BrownPrimary, shape = CircleShape)
+                                            .padding(horizontal = 12.dp, vertical = 6.dp)
+                                    ) {
+                                        Text(
+                                            text = tag,
+                                            color = Color.White,
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
-
-                    AsyncImage(
-                        model = item.img,
-                        contentDescription = "Picture",
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier
-                            .height(200.dp)
-                            .fillMaxWidth()
-                    )
 
                     Row(
                         modifier = Modifier
