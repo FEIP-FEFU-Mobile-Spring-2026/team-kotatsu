@@ -1,13 +1,14 @@
 package ru.makoto.fefustore.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,12 +21,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -38,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -111,6 +115,28 @@ fun MenuScreen(
 
     if (selectedClothes != null) {
         val item = selectedClothes!!
+        var showInfoDialog by remember { mutableStateOf(false) }
+
+        if (showInfoDialog) {
+            AlertDialog(
+                onDismissRequest = { showInfoDialog = false },
+                title = { Text(text = "Характеристики") },
+                text = {
+                    Column {
+                        Text(text = "Материал: ${item.material}")
+                        Text(text = "Вес: ${item.weight}")
+                        Text(text = "Сезон: ${item.season}")
+                        Text(text = "Страна производства: ${item.countryOfOrigin}")
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showInfoDialog = false }) {
+                        Text("Закрыть")
+                    }
+                }
+            )
+        }
+
         ModalBottomSheet(
             onDismissRequest = { selectedClothes = null },
             sheetState = sheetState,
@@ -119,18 +145,17 @@ fun MenuScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .fillMaxHeight(0.85f)
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 Column(
                     modifier = Modifier
-                        .weight(1f, fill = false)
+                        .weight(1f)
                         .verticalScroll(rememberScrollState())
                 ) {
                     if (item.tags.isNotEmpty()) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
+                            modifier = Modifier.padding(vertical = 8.dp),
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             item.tags.forEach { tag ->
@@ -139,29 +164,21 @@ fun MenuScreen(
                                         .background(AppColors.BrownPrimary, shape = CircleShape)
                                         .padding(horizontal = 12.dp, vertical = 6.dp)
                                 ) {
-                                    Text(
-                                        text = tag,
-                                        color = Color.White,
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
+                                    Text(text = tag, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                                 }
                             }
                         }
                     }
-                    Box(
+
+                    AsyncImage(
+                        model = item.img,
+                        contentDescription = "Picture",
+                        contentScale = ContentScale.Fit,
                         modifier = Modifier
-                            .height(300.dp)
+                            .height(200.dp)
                             .fillMaxWidth()
-                    ) {
-                        AsyncImage(
-                            alignment = Alignment.Center,
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier.fillMaxSize(),
-                            model = item.img,
-                            contentDescription = "Picture"
-                        )
-                    }
+                    )
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -173,22 +190,30 @@ fun MenuScreen(
                             text = item.title,
                             style = MaterialTheme.typography.headlineLarge,
                             fontWeight = FontWeight.Bold,
-                            color = Color.Black
+                            color = Color.Black,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 16.dp)
                         )
                         Icon(
                             imageVector = Icons.Default.Info,
-                            contentDescription = "icon",
-                            tint = AppColors.GrayLight,
-                            modifier = Modifier.size(40.dp)
+                            contentDescription = "Характеристики",
+                            tint = Color(0xFF6A4E46),
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clickable { showInfoDialog = true }
                         )
                     }
                     Text(
-                        modifier = Modifier.padding(vertical = 4.dp),
                         text = item.longDescription,
                         style = MaterialTheme.typography.bodyLarge,
-                        color = Color.Gray
+                        color = Color.Gray,
+                        modifier = Modifier.padding(vertical = 4.dp)
                     )
                 }
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
