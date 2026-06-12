@@ -1,23 +1,63 @@
 package ru.makoto.fefustore.screens
 
-import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import ru.makoto.fefustore.Data.DTO.Clothes
+import ru.makoto.fefustore.Data.DTO.Size
+import ru.makoto.fefustore.components.CategoryItem
 import ru.makoto.fefustore.components.CategoryPicker
 import ru.makoto.fefustore.components.ClothCard
 import ru.makoto.fefustore.components.ClothCardSkeleton
 import ru.makoto.fefustore.components.ErrorState
+import ru.makoto.fefustore.ui.theme.AppColors
+import ru.makoto.fefustore.utils.PriceFormatter
 import ru.makoto.fefustore.viewmodels.ProductsViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuScreen(
     navController: NavController,
@@ -25,11 +65,12 @@ fun MenuScreen(
 ) {
     val clothes by viewModel.clothes.collectAsState()
     val categories by viewModel.categories.collectAsState()
-
     val currentCategory by viewModel.currentCategory.collectAsState()
-
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
+    var selectedClothes by remember { mutableStateOf<Clothes?>(null) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var activeSize by remember(selectedClothes?.id) { mutableStateOf<Size?>(null) }
 
     Column {
         CategoryPicker(
@@ -58,15 +99,153 @@ fun MenuScreen(
                 LazyColumn {
                     items(clothes.filter {
                         (currentCategory == null && it.tags.contains("New")) || (it.category == currentCategory)
-                    }) {
-
+                    }) { item ->
                         ClothCard(
-                            clothes = it,
-                            navController = navController,
-                            // можно потом предзагружать
-                            cartAmount = viewModel.getCartAmount(it.id),
+                            clothes = item,
+                            onCardClick = { selectedClothes = item },
+                            cartAmount = viewModel.getCartAmount(item.id),
                             addToCart = { clothesId: String -> viewModel.addToCart(clothesId) },
                             removeFromCart = { clothesId: String -> viewModel.removeFromCart(clothesId) }
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    if (selectedClothes != null) {
+        val item = selectedClothes!!
+        var showInfoDialog by remember { mutableStateOf(false) }
+
+        if (showInfoDialog) {
+            AlertDialog(
+                onDismissRequest = { showInfoDialog = false },
+                title = { Text(text = "Характеристики") },
+                text = {
+                    Column {
+                        Text(text = "Материал: ${item.material}")
+                        Text(text = "Вес: ${item.weight}")
+                        Text(text = "Сезон: ${item.season}")
+                        Text(text = "Страна производства: ${item.countryOfOrigin}")
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showInfoDialog = false }) {
+                        Text("Закрыть")
+                    }
+                }
+            )
+        }
+
+        ModalBottomSheet(
+            onDismissRequest = { selectedClothes = null },
+            sheetState = sheetState,
+            containerColor = Color.White
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.85f)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    if (item.tags.isNotEmpty()) {
+                        Row(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            item.tags.forEach { tag ->
+                                Box(
+                                    modifier = Modifier
+                                        .background(AppColors.BrownPrimary, shape = CircleShape)
+                                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                                ) {
+                                    Text(text = tag, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                }
+                            }
+                        }
+                    }
+
+                    AsyncImage(
+                        model = item.img,
+                        contentDescription = "Picture",
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .height(200.dp)
+                            .fillMaxWidth()
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = item.title,
+                            style = MaterialTheme.typography.headlineLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 16.dp)
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = "Характеристики",
+                            tint = Color(0xFF6A4E46),
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clickable { showInfoDialog = true }
+                        )
+                    }
+                    Text(
+                        text = item.longDescription,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp, bottom = 24.dp)
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        modifier = Modifier
+                            .horizontalScroll(rememberScrollState())
+                            .padding(bottom = 12.dp)
+                    ) {
+                        item.sizes.forEach { size ->
+                            CategoryItem(
+                                title = size.name.toString(),
+                                isActive = (activeSize?.id ?: "") != size.id,
+                                onClick = { activeSize = size }
+                            )
+                        }
+                    }
+                    Button(
+                        onClick = {
+                            viewModel.addToCart(item.id)
+                            selectedClothes = null
+                        },
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                    ) {
+                        Text(
+                            text = "Добавить в корзину - ${PriceFormatter.format(item.price)}",
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
                 }
