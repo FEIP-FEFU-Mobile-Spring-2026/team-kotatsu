@@ -1,6 +1,7 @@
 package ru.makoto.fefustore.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,13 +20,17 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -111,6 +116,28 @@ fun MenuScreen(
 
     if (selectedClothes != null) {
         val item = selectedClothes!!
+        var showInfoDialog by remember { mutableStateOf(false) }
+
+        if (showInfoDialog) {
+            AlertDialog(
+                onDismissRequest = { showInfoDialog = false },
+                title = { Text(text = "Характеристики") },
+                text = {
+                    Column {
+                        Text(text = "Материал: ${item.material}")
+                        Text(text = "Вес: ${item.weight}")
+                        Text(text = "Сезон: ${item.season}")
+                        Text(text = "Страна производства: ${item.countryOfOrigin}")
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showInfoDialog = false }) {
+                        Text("Закрыть")
+                    }
+                }
+            )
+        }
+
         ModalBottomSheet(
             onDismissRequest = { selectedClothes = null },
             sheetState = sheetState,
@@ -151,7 +178,7 @@ fun MenuScreen(
                     }
                     Box(
                         modifier = Modifier
-                            .height(300.dp)
+                            .height(200.dp) // Размер слайдера уменьшен
                             .fillMaxWidth()
                     ) {
                         AsyncImage(
@@ -161,6 +188,13 @@ fun MenuScreen(
                             model = item.img,
                             contentDescription = "Picture"
                         )
+                        // Кнопка закрытия bottom sheet
+                        IconButton(
+                            onClick = { selectedClothes = null },
+                            modifier = Modifier.align(Alignment.TopEnd)
+                        ) {
+                            Icon(Icons.Default.Close, contentDescription = "Закрыть", tint = AppColors.BrownPrimary)
+                        }
                     }
                     Row(
                         modifier = Modifier
@@ -179,7 +213,9 @@ fun MenuScreen(
                             imageVector = Icons.Default.Info,
                             contentDescription = "icon",
                             tint = AppColors.GrayLight,
-                            modifier = Modifier.size(40.dp)
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clickable { showInfoDialog = true } // Открытие попапа с инфо
                         )
                     }
                     Text(
