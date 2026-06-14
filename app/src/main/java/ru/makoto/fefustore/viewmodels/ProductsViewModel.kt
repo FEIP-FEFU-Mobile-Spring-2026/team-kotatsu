@@ -62,7 +62,6 @@ class ProductsViewModel @Inject constructor(
             is NetworkResult.Error<String> -> {
                 when (errorClass) {
                     ExceptionUiState.Error.BannerError::class -> {
-                        Log.d("Banner", response.message)
                         _uiState.value = ExceptionUiState.Error.BannerError(response.message)
                     }
                     ExceptionUiState.Error.SnackbarError::class -> {
@@ -71,7 +70,6 @@ class ProductsViewModel @Inject constructor(
                             id = (_uiState.value as ExceptionUiState.Error.SnackbarError).id + 1
                         }
                         _uiState.value = ExceptionUiState.Error.SnackbarError(response.message, id)
-                        Log.d("Snackbar", response.message)
                     }
                 }
             }

@@ -22,7 +22,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "API_KEY", "\"${getLocalProperty("api.key")}\"")
+        buildConfigField("String", "API_KEY", "\"Cmt7wdwFgDIi1_SRX8hlJIExs0jJKPr4axflLpExAxM\"")
     }
 
     buildTypes {
@@ -82,16 +82,4 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation("com.google.code.gson:gson:2.10.1")
-}
-
-fun getLocalProperty(key: String, default: String = "not_set"): String {
-    val properties = Properties()
-    val localPropertiesFile = rootProject.file("local.properties")
-
-    if (localPropertiesFile.exists()) {
-        properties.load(localPropertiesFile.inputStream())
-        return properties.getProperty(key, default)
-    }
-
-    return default
 }

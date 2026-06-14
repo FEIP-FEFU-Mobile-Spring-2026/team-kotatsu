@@ -71,10 +71,10 @@ class StoreRepository @Inject constructor(
             if (response.isSuccessful) {
                 NetworkResult.Success(response.body()?.string() ?: "")
             } else {
-                NetworkResult.Error("Server error", response.code())
+                NetworkResult.Error(response.message(), response.code())
             }
         } catch (e: IOException) {
-            NetworkResult.Error("Server is unreachable", 504)
+            NetworkResult.Error(e.message ?: "Server is unreachable", 504)
         } catch (e: Exception) {
             NetworkResult.Error(e.message ?: "Unknown error")
         }
