@@ -1,13 +1,23 @@
 package ru.makoto.fefustore.Data.Repositories
 
+import android.util.Log
 import androidx.lifecycle.asFlow
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withTimeout
+import kotlinx.serialization.json.Json
 import ru.makoto.fefustore.Data.DAO.*
 import ru.makoto.fefustore.Data.DTO.*
 import ru.makoto.fefustore.Data.Entity.*
 import ru.makoto.fefustore.Data.Relation.*
+import ru.makoto.fefustore.Data.Remote.ApiService
+import ru.makoto.fefustore.Data.Remote.ConnectivityObserver
+import ru.makoto.fefustore.Data.Remote.NetworkResult
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -37,8 +47,68 @@ class StoreRepository @Inject constructor(
     private val clothesTagDAO: ClothesTagDAO,
     private val tagDAO: TagDAO,
     private val cartDAO: CartDAO,
-    private val selectedCategoryDAO: SelectedCategoryDAO
+    private val selectedCategoryDAO: SelectedCategoryDAO,
+    private val api: ApiService,
+    private val connectivityObserver: ConnectivityObserver
 ) {
+
+    fun hasCachedData(): Flow<Boolean> = combine(
+        clothesDAO.getClothesCount(),
+        categoryDAO.getCategoriesCount(),
+        clothesSizeDAO.getClothesSizeCount(),
+        clothesTagDAO.getClothesTagCount(),
+        tagDAO.getTagCount()
+    ) { clothesCount, categoryCount, clothesSizeCount, clothesTagCount, tagCount ->
+        clothesCount > 0 && categoryCount > 0 && clothesSizeCount > 0 && clothesTagCount > 0 && tagCount > 0
+    }
+
+    suspend fun fetchCatalog(): NetworkResult<String> {
+        if (!connectivityObserver.isCurrentlyConnected()) {
+            return NetworkResult.Error("No internet connection", 504)
+        }
+        return try {
+            val response = api.getCatalog()
+            if (response.isSuccessful) {
+                NetworkResult.Success(response.body()?.string() ?: "")
+            } else {
+                NetworkResult.Error(response.message(), response.code())
+            }
+        } catch (e: IOException) {
+            NetworkResult.Error(e.message ?: "Server is unreachable", 504)
+        } catch (e: Exception) {
+            NetworkResult.Error(e.message ?: "Unknown error")
+        }
+    }
+
+    suspend fun loadData(jsonData: String) {
+        val json = Json {
+            ignoreUnknownKeys = true
+            isLenient = true
+        }
+        val productsData = json.decodeFromString<ProductsData>(jsonData)
+        val tags = listOf("New", "Sale", "Popular")
+
+        tags.withIndex().forEach { (index, tagName) ->
+            addTag(TagEntity(index.toString(), tagName))
+        }
+
+        productsData.categories.forEach { cat ->
+            addCategory(cat.toEntity())
+        }
+        productsData.products.forEach { clothes ->
+            addClothes(clothes.toEntity())
+            clothes.sizes.forEach { size ->
+                addClothesSize(size.toEntity(clothes.id))
+            }
+            clothes.tags.forEach { tag ->
+                setClothesTag(
+                    clothes.toEntity(),
+                    TagEntity(tags.indexOf(tag).toString(), tag)
+                )
+            }
+        }
+    }
+
     fun getAllCategories(): Flow<List<Category>> = categoryDAO.getAll().map {
         it.map { categoryEntity ->
             categoryEntity.toCategory()
