@@ -22,4 +22,6 @@ interface CategoryDAO {
     @Query("SELECT * FROM category")
     fun getAll(): Flow<List<CategoryEntity>>
 
+    @Query("SELECT COUNT(*) FROM category")
+    fun getCategoriesCount(): Flow<Int>
 }

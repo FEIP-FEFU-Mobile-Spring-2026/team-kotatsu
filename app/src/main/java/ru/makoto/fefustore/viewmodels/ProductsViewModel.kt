@@ -1,7 +1,7 @@
 package ru.makoto.fefustore.viewmodels
 
 import android.content.Context
-import androidx.compose.runtime.traceEventStart
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,73 +11,82 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.makoto.fefustore.Data.DTO.*
-import kotlinx.serialization.json.Json
-import ru.makoto.fefustore.Data.Cart
-import ru.makoto.fefustore.Data.Entity.TagEntity
+import ru.makoto.fefustore.Data.Remote.NetworkResult
 import ru.makoto.fefustore.Data.Repositories.StoreRepository
-import ru.makoto.fefustore.R
 import javax.inject.Inject
+import kotlin.reflect.KClass
+
+sealed interface ExceptionUiState {
+    object Loading : ExceptionUiState
+    object Success : ExceptionUiState
+    sealed interface Error : ExceptionUiState {
+        data class BannerError(val message: String) : Error
+        data class SnackbarError(val message: String, val id: Int) : Error
+    }
+}
+
 
 @HiltViewModel
 class ProductsViewModel @Inject constructor(
     private val repository: StoreRepository,
-    @ApplicationContext private val context: Context
+    @ApplicationContext val context: Context
 ) : ViewModel() {
-    private val _isLoading = MutableStateFlow(true)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+    private val _uiState = MutableStateFlow<ExceptionUiState>(ExceptionUiState.Success)
+    val uiState: StateFlow<ExceptionUiState> = _uiState.asStateFlow()
 
     init {
-        fetchData()
-    }
-
-    fun fetchData() {
         viewModelScope.launch {
-            _isLoading.value = true
-            _errorMessage.value = null
-
             try {
-                val content: String = context.resources.openRawResource(R.raw.products)
-                    .bufferedReader(Charsets.UTF_8).use { it.readText() }
-                val json = Json {
-                    ignoreUnknownKeys = true
-                    isLenient = true
+                if (!(repository.hasCachedData().firstOrNull() ?: false)) {
+                    _uiState.value = ExceptionUiState.Loading
+                    fetchAndLoadData(ExceptionUiState.Error.BannerError::class)
+                } else {
+                    fetchAndLoadData(ExceptionUiState.Error.SnackbarError::class)
                 }
-                val productsData = json.decodeFromString<ProductsData>(content)
-                val tags = listOf("New", "Sale", "Popular")
-
-                tags.withIndex().forEach { (index, tagName) ->
-                    repository.addTag(TagEntity(index.toString(), tagName))
-                }
-
-                productsData.categories.forEach { cat ->
-                    repository.addCategory(cat.toEntity())
-                }
-                productsData.products.forEach { clothes ->
-                    repository.addClothes(clothes.toEntity())
-                    clothes.sizes.forEach { size ->
-                        repository.addClothesSize(size.toEntity(clothes.id))
-                    }
-                    clothes.tags.forEach { tag ->
-                        repository.setClothesTag(
-                            clothes.toEntity(),
-                            TagEntity(tags.indexOf(tag).toString(), tag)
-                        )
-                    }
-                }
-                _isLoading.value = false
-
             } catch (e: Exception) {
-                _isLoading.value = false
-                _errorMessage.value = "Ошибка при загрузке данных. Попробуйте снова."
+                _uiState.value = ExceptionUiState.Error.BannerError("Unknown server error")
             }
         }
+    }
+
+    private suspend fun fetchAndLoadData(errorClass: KClass<out ExceptionUiState.Error>) {
+        when (val response = repository.fetchCatalog()) {
+            is NetworkResult.Success<String> -> {
+                repository.loadData(response.data)
+                _uiState.value = ExceptionUiState.Success
+            }
+            is NetworkResult.Error<String> -> {
+                when (errorClass) {
+                    ExceptionUiState.Error.BannerError::class -> {
+                        Log.d("Banner", response.message)
+                        _uiState.value = ExceptionUiState.Error.BannerError(response.message)
+                    }
+                    ExceptionUiState.Error.SnackbarError::class -> {
+                        var id = 0
+                        if (_uiState.value is ExceptionUiState.Error.SnackbarError) {
+                            id = (_uiState.value as ExceptionUiState.Error.SnackbarError).id + 1
+                        }
+                        _uiState.value = ExceptionUiState.Error.SnackbarError(response.message, id)
+                        Log.d("Snackbar", response.message)
+                    }
+                }
+            }
+            is NetworkResult.Loading<String> -> {
+                _uiState.value = ExceptionUiState.Loading
+            }
+        }
+
+    }
+
+    fun fetchAndLoadDataSync(errorClass: KClass<out ExceptionUiState.Error>) = viewModelScope.launch {
+        if (errorClass != ExceptionUiState.Error.SnackbarError::class) {
+            _uiState.value = ExceptionUiState.Loading
+        }
+        fetchAndLoadData(errorClass)
     }
 
     val clothes: StateFlow<List<Clothes>> = repository.getAllClothes().stateIn(
