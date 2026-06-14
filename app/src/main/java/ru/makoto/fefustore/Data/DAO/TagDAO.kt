@@ -25,4 +25,7 @@ interface TagDAO {
 
     @Query("SELECT * FROM tag WHERE id = :id LIMIT 1")
     fun getTagById(id: String): Flow<TagEntity>
+
+    @Query("SELECT COUNT(*) FROM tag")
+    fun getTagCount(): Flow<Int>
 }
