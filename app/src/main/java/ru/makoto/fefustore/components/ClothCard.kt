@@ -20,17 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.StateFlow
 import ru.makoto.fefustore.Data.DTO.Clothes
-import ru.makoto.fefustore.navigation.Destination
-
 
 @Composable
 fun ClothCard(
     clothes: Clothes,
-    navController: NavController,
+    onCardClick: () -> Unit,
     cartAmount: StateFlow<Int>,
     addToCart: (String) -> Unit,
     removeFromCart: (String) -> Unit
@@ -38,18 +35,15 @@ fun ClothCard(
     val cartAmountState by cartAmount.collectAsState()
 
     Card(
-        modifier = Modifier.clickable(onClick = {
-            navController.navigate(
-                Destination.CARD(clothes.id).route,
-            )
-        }),
+        modifier = Modifier.clickable(onClick = onCardClick),
         colors = CardDefaults.cardColors(containerColor = colorScheme.background)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(20.dp)
-                .height(200.dp), verticalAlignment = Alignment.CenterVertically
+                .height(200.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
                 modifier = Modifier.weight(1f),
@@ -62,9 +56,8 @@ fun ClothCard(
                     .fillMaxHeight()
                     .padding(start = 5.dp),
                 verticalArrangement = Arrangement.SpaceBetween,
-
-                ) {
-                Column() {
+            ) {
+                Column {
                     Text(clothes.title, fontWeight = FontWeight.Bold)
                     Text(clothes.description, color = Color.Gray)
                 }
