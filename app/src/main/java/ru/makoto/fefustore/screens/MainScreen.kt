@@ -19,7 +19,6 @@ import ru.makoto.fefustore.components.CustomBottomBar
 import ru.makoto.fefustore.navigation.AppNavHost
 import ru.makoto.fefustore.viewmodels.ExceptionUiState
 import ru.makoto.fefustore.viewmodels.ProductsViewModel
-import kotlin.time.Duration
 
 @Composable
 fun MainScreen(viewModel: ProductsViewModel) {
@@ -30,6 +29,10 @@ fun MainScreen(viewModel: ProductsViewModel) {
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val clothesInCart by viewModel.clothesInCart.collectAsState()
+    val cartCount = remember(clothesInCart) {
+        clothesInCart.sumOf { it.amount }
+    }
 
     LaunchedEffect(errorState) {
         Log.d("NEW STATE", errorState.toString())
@@ -55,7 +58,10 @@ fun MainScreen(viewModel: ProductsViewModel) {
     Scaffold(
         bottomBar = {
             if (currentRoute?.startsWith("card") != true) {
-                CustomBottomBar(navController = navController)
+                CustomBottomBar(
+                    navController = navController,
+                    cartCount = cartCount
+                )
             }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
