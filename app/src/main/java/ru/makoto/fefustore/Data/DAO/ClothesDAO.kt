@@ -29,4 +29,7 @@ interface ClothesDAO {
 
     @Query("SELECT * FROM clothes WHERE id = :id")
     fun getClothesById(id: String): Flow<List<ClothesEntity>>
+
+    @Query("SELECT COUNT(*) FROM clothes")
+    fun getClothesCount(): Flow<Int>
 }

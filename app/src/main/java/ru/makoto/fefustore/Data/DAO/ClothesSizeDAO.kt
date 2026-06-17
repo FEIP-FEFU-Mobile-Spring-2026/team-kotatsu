@@ -25,4 +25,7 @@ interface ClothesSizeDAO {
 
     @Query("SELECT * FROM clothes_size WHERE clothesId = :id")
     fun getSizesByClothesId(id: String): Flow<List<ClothesSizeEntity>>
+
+    @Query("SELECT COUNT(*) FROM clothes_size")
+    fun getClothesSizeCount(): Flow<Int>
 }

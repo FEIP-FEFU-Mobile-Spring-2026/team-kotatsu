@@ -30,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -58,6 +59,7 @@ import ru.makoto.fefustore.components.ClothCardSkeleton
 import ru.makoto.fefustore.components.ErrorState
 import ru.makoto.fefustore.ui.theme.AppColors
 import ru.makoto.fefustore.utils.PriceFormatter
+import ru.makoto.fefustore.viewmodels.ExceptionUiState
 import ru.makoto.fefustore.viewmodels.ProductsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,8 +71,7 @@ fun MenuScreen(
     val clothes by viewModel.clothes.collectAsState()
     val categories by viewModel.categories.collectAsState()
     val currentCategory by viewModel.currentCategory.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val errorMessage by viewModel.errorMessage.collectAsState()
+    val errorState by viewModel.uiState.collectAsState()
     var selectedClothes by remember { mutableStateOf<Clothes?>(null) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var activeSize by remember(selectedClothes?.id) { mutableStateOf<Size?>(null) }
@@ -83,8 +84,8 @@ fun MenuScreen(
             changeCategory = { category -> viewModel.setCategory(category?.id) },
         )
 
-        when {
-            isLoading -> {
+        when (val newError = errorState) {
+            is ExceptionUiState.Loading -> {
                 LazyColumn {
                     items(4) {
                         ClothCardSkeleton()
@@ -92,14 +93,12 @@ fun MenuScreen(
                     }
                 }
             }
-
-            errorMessage != null -> {
+            is ExceptionUiState.Error.BannerError -> {
                 ErrorState(
-                    message = errorMessage ?: "Неизвестная ошибка",
-                    onRetry = { viewModel.fetchData() }
+                    message = newError.message,
+                    onRetry = { viewModel.fetchAndLoadDataSync(ExceptionUiState.Error.BannerError::class) }
                 )
             }
-
             else -> {
                 LazyColumn {
                     items(clothes.filter {
