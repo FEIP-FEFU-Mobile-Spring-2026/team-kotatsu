@@ -9,7 +9,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import ru.makoto.fefustore.viewmodels.ProductsViewModel
 
 @Composable
@@ -30,7 +29,10 @@ fun CartScreen(viewModel: ProductsViewModel) {
 //                    } else {
 //                        "Товар удалён — $count шт."
 //                    },
-                    text = "${cartItem.clothes.title} — ${cartItem.amount} шт.",
+                    text = "${cartItem.clothes.title} — ${cartItem.amount} шт., размер - ${
+                        cartItem.selectedSize?.name
+
+                    }",
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
             }

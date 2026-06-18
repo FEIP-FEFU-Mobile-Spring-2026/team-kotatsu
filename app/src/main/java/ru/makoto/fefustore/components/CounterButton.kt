@@ -15,76 +15,60 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.StateFlow
-import ru.makoto.fefustore.Data.DTO.Clothes
 import ru.makoto.fefustore.R
 import ru.makoto.fefustore.ui.theme.AppColors
 
-
 @Composable
 fun CounterButton(
-    clothes: Clothes,
-    cartAmount: Int,
-    addToCart: (String) -> Unit,
-    removeFromCart: (String) -> Unit)
-{
-
-    if (cartAmount == 0) {
-        PriceButton(clothes) {
-            addToCart(clothes.id)
-        }
-    } else {
-        Row(
+    amount: Int,
+    onAdd: () -> Unit,
+    onRemove: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .height(50.dp)
+            .background(
+                AppColors.GrayLight,
+                shape = RoundedCornerShape(5.dp)
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceAround,
+    ) {
+        Box(
             modifier = Modifier
-                .height(50.dp)
-                .background(
-                    AppColors.GrayLight,
-                    shape = RoundedCornerShape(5.dp)
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround,
+                .fillMaxHeight()
+                .width(50.dp)
+                .clickable { onRemove() },
+            contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(50.dp)
-                    .clickable {
-                        removeFromCart(clothes.id)
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.remove_24px),
-                    contentDescription = "Убрать",
-                )
-            }
-
-            Text(
-                modifier = Modifier.padding(horizontal = 20.dp),
-                text = cartAmount.toString()
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.remove_24px),
+                contentDescription = "Убрать",
             )
+        }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(50.dp)
-                    .clickable {
-                        addToCart(clothes.id)
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Add,
-                    contentDescription = "Добавить"
-                )
-            }
+        Text(
+            modifier = Modifier.padding(horizontal = 20.dp),
+            text = amount.toString()
+        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(50.dp)
+                .clickable { onAdd() },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Add,
+                contentDescription = "Добавить"
+            )
         }
     }
 }
