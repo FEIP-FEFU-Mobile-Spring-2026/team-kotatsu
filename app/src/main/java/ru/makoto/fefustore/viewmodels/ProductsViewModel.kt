@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ru.makoto.fefustore.Data.DTO.CartItem
@@ -30,7 +31,6 @@ sealed interface ExceptionUiState {
         data class SnackbarError(val message: String, val id: Int) : Error
     }
 }
-
 
 @HiltViewModel
 class ProductsViewModel @Inject constructor(
@@ -163,4 +163,17 @@ class ProductsViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = null
         )
+
+    val cartTotalPrice: StateFlow<Int> = clothesInCart.map { items ->
+        items.sumOf { it.clothes.price * it.amount }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
+
+    fun clearCart() = viewModelScope.launch { repository.clearCart() }
+
+    fun removeCompletelyFromCart(clothesId: String, sizeId: String?) = viewModelScope.launch {
+        repository.removeItemCompletelyFromCart(clothesId, sizeId)
+    }
+    fun checkoutOrder() = viewModelScope.launch {
+        repository.clearCart()
+    }
 }

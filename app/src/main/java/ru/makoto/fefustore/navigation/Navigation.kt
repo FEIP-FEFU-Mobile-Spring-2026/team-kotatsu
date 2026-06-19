@@ -37,8 +37,13 @@ fun AppNavHost(
         startDestination = Destination.MENU.route,
         modifier = modifier
     ) {
-        composable(Destination.MENU.route) { MenuScreen(navController, viewModel,) }
-        composable(Destination.CART.route) { CartScreen(viewModel) }
+        composable(Destination.MENU.route) { MenuScreen(navController, viewModel) }
+        composable(Destination.CART.route) {
+            CartScreen(
+                navController,
+                viewModel
+            )
+        }
 
         composable(
             Destination.CARD("{id}").route,

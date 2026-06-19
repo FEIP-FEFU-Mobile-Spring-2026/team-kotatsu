@@ -197,4 +197,17 @@ class StoreRepository @Inject constructor(
             tagId = tag.id
         )
     )
+
+    suspend fun clearCart() {
+        cartDAO.clearCart()
+    }
+
+    suspend fun removeItemCompletelyFromCart(clothesId: String, sizeId: String? = null) {
+        val cartItems = cartDAO.getItemByClothesId(clothesId).first()
+        val existingItem = cartItems.find { it.cart.sizeId == sizeId }
+
+        if (existingItem != null) {
+            cartDAO.delete(existingItem.cart)
+        }
+    }
 }
