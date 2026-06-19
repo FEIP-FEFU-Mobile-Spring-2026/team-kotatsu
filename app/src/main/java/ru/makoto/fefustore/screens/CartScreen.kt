@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -31,6 +32,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -73,6 +75,8 @@ fun CartScreen(
     var showSuccessSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
+    var showClearDialog by remember { mutableStateOf(false) }
+
     if (showSuccessSheet) {
         ModalBottomSheet(
             onDismissRequest = {
@@ -91,6 +95,29 @@ fun CartScreen(
         }
     }
 
+    if (showClearDialog) {
+        AlertDialog(
+            onDismissRequest = { showClearDialog = false },
+            title = { Text("Очистить корзину?") },
+            text = { Text("Вы уверены, что хотите удалить все товары из корзины?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.clearCart()
+                        showClearDialog = false
+                    }
+                ) {
+                    Text("Да", color = AppColors.BrownPrimary)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearDialog = false }) {
+                    Text("Отмена", color = AppColors.BrownPrimary)
+                }
+            }
+        )
+    }
+
     Scaffold(
         containerColor = Color.White,
         topBar = {
@@ -105,7 +132,7 @@ fun CartScreen(
                 },
                 actions = {
                     if (clothesInCart.isNotEmpty()) {
-                        IconButton(onClick = { viewModel.clearCart() }) {
+                        IconButton(onClick = { showClearDialog = true }) {
                             Icon(
                                 Icons.Default.Delete,
                                 contentDescription = "Очистить",

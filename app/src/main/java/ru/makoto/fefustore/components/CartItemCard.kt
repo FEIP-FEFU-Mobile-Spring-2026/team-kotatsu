@@ -93,7 +93,10 @@ fun CartItemCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = PriceFormatter.format(cartItem.clothes.price),
+                    text = PriceFormatter.format(
+                        cartItem.clothes.price *
+                                cartItem.amount
+                    ),
                     fontWeight = FontWeight.Bold,
                     color = AppColors.BrownSecondary,
                     fontSize = 15.sp
