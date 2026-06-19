@@ -2,13 +2,12 @@ package ru.makoto.fefustore.Data.Relation
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import androidx.room.ForeignKey
-
 import ru.makoto.fefustore.Data.Entity.CartEntity
 import ru.makoto.fefustore.Data.Entity.ClothesEntity
 import ru.makoto.fefustore.Data.Entity.toCartItem
+import ru.makoto.fefustore.Data.DTO.CartItem
 
-data class CartWithClothes (
+data class CartWithClothes(
     @Embedded val cart: CartEntity,
     @Relation(
         entity = ClothesEntity::class,
@@ -18,4 +17,10 @@ data class CartWithClothes (
     val clothes: ClothesWithDetails
 )
 
-fun CartWithClothes.toCartItem() = cart.toCartItem(clothes = clothes.toClothes())
+fun CartWithClothes.toCartItem(): CartItem {
+    val domainClothes = clothes.toClothes()
+
+    val selectedSize = domainClothes.sizes.find { it.id == cart.sizeId }
+
+    return cart.toCartItem(clothes = domainClothes, selectedSize = selectedSize)
+}

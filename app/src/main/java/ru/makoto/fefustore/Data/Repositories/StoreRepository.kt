@@ -1,14 +1,10 @@
 package ru.makoto.fefustore.Data.Repositories
 
-import android.util.Log
 import androidx.lifecycle.asFlow
-import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.Json
 import ru.makoto.fefustore.Data.DAO.*
 import ru.makoto.fefustore.Data.DTO.*
@@ -114,6 +110,7 @@ class StoreRepository @Inject constructor(
             categoryEntity.toCategory()
         }
     }
+
     fun getAllClothes(): Flow<List<Clothes>> = clothesDAO.getAll().asFlow().map {
         it.map { clothesWithDetailsEntity ->
             clothesWithDetailsEntity.toClothes()
@@ -126,41 +123,70 @@ class StoreRepository @Inject constructor(
         }
     }
 
-    fun getCartAmount(clothesId: String): Flow<Int> = cartDAO.getItemByClothesId(clothesId).map {
-        if (it.isEmpty())
-            return@map 0
-        return@map it[0].cart.amount
-    }
+    /* fun getCartAmount(clothesId: String): Flow<Int> = cartDAO.getItemByClothesId(clothesId).map {
+         if (it.isEmpty())
+             return@map 0
+         return@map it[0].cart.amount
+     }*/
 
-    suspend fun addItemInCart(clothesId: String) {
+    fun getCartAmount(clothesId: String): Flow<Int> =
+        cartDAO.getItemByClothesId(clothesId).map { list ->
+            list.sumOf { it.cart.amount }
+        }
+
+    /*suspend fun addItemInCart(clothesId: String) {
         val cartItem = cartDAO.getItemByClothesId(clothesId).first()
         if (cartItem.isEmpty())
             cartDAO.insert(CartEntity(clothesId = clothesId, amount = 1))
         else
             cartDAO.update(cartItem[0].cart.copy(amount = cartItem[0].cart.amount + 1))
-    }
+    }*/
+    suspend fun addItemInCart(clothesId: String, sizeId: String? = null) {
+        val cartItems = cartDAO.getItemByClothesId(clothesId).first()
+        val existingItem = cartItems.find { it.cart.sizeId == sizeId }
 
-
-    suspend fun removeItemFromCart(clothesId: String) {
-        val cartItem = cartDAO.getItemByClothesId(clothesId).first()
-        if (!cartItem.isEmpty()) {
-            if (cartItem[0].cart.amount > 1)
-                cartDAO.update(cartItem[0].cart.copy(amount = cartItem[0].cart.amount - 1))
-            else
-                cartDAO.delete(cartItem[0].cart)
+        if (existingItem == null) {
+            cartDAO.insert(CartEntity(clothesId = clothesId, sizeId = sizeId, amount = 1))
+        } else {
+            cartDAO.update(existingItem.cart.copy(amount = existingItem.cart.amount + 1))
         }
     }
+
+    /*    suspend fun removeItemFromCart(clothesId: String) {
+            val cartItem = cartDAO.getItemByClothesId(clothesId).first()
+            if (!cartItem.isEmpty()) {
+                if (cartItem[0].cart.amount > 1)
+                    cartDAO.update(cartItem[0].cart.copy(amount = cartItem[0].cart.amount - 1))
+                else
+                    cartDAO.delete(cartItem[0].cart)
+            }
+        }*/
+    suspend fun removeItemFromCart(clothesId: String, sizeId: String? = null) {
+        val cartItems = cartDAO.getItemByClothesId(clothesId).first()
+        val existingItem = cartItems.find { it.cart.sizeId == sizeId }
+
+        if (existingItem != null) {
+            if (existingItem.cart.amount > 1) {
+                cartDAO.update(existingItem.cart.copy(amount = existingItem.cart.amount - 1))
+            } else {
+                cartDAO.delete(existingItem.cart)
+            }
+        }
+    }
+
     fun getSelectedCategory(): Flow<String?> = selectedCategoryDAO.getSelectedCategory().map {
         if (it.isEmpty())
             return@map null
         return@map it[0].categoryId
     }
+
     suspend fun selectCategory(categoryId: String) = selectedCategoryDAO.selectCategory(categoryId)
     suspend fun clearCategories() = selectedCategoryDAO.clearSelectedCategory()
     suspend fun addCategory(category: CategoryEntity) {
         categoryDAO.insert(category)
         selectedCategoryDAO.insert(SelectedCategoryEntity(category.id, false))
     }
+
     suspend fun addClothes(clothes: ClothesEntity) = clothesDAO.insert(clothes)
     suspend fun addTag(tag: TagEntity) = tagDAO.insert(tag)
 
@@ -171,4 +197,17 @@ class StoreRepository @Inject constructor(
             tagId = tag.id
         )
     )
+
+    suspend fun clearCart() {
+        cartDAO.clearCart()
+    }
+
+    suspend fun removeItemCompletelyFromCart(clothesId: String, sizeId: String? = null) {
+        val cartItems = cartDAO.getItemByClothesId(clothesId).first()
+        val existingItem = cartItems.find { it.cart.sizeId == sizeId }
+
+        if (existingItem != null) {
+            cartDAO.delete(existingItem.cart)
+        }
+    }
 }

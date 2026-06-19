@@ -1,7 +1,6 @@
 package ru.makoto.fefustore.viewmodels
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,9 +11,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import ru.makoto.fefustore.Data.DTO.*
+import ru.makoto.fefustore.Data.DTO.CartItem
+import ru.makoto.fefustore.Data.DTO.Category
+import ru.makoto.fefustore.Data.DTO.Clothes
+import ru.makoto.fefustore.Data.DTO.Size
 import ru.makoto.fefustore.Data.Remote.NetworkResult
 import ru.makoto.fefustore.Data.Repositories.StoreRepository
 import javax.inject.Inject
@@ -28,7 +31,6 @@ sealed interface ExceptionUiState {
         data class SnackbarError(val message: String, val id: Int) : Error
     }
 }
-
 
 @HiltViewModel
 class ProductsViewModel @Inject constructor(
@@ -59,11 +61,13 @@ class ProductsViewModel @Inject constructor(
                 repository.loadData(response.data)
                 _uiState.value = ExceptionUiState.Success
             }
+
             is NetworkResult.Error<String> -> {
                 when (errorClass) {
                     ExceptionUiState.Error.BannerError::class -> {
                         _uiState.value = ExceptionUiState.Error.BannerError(response.message)
                     }
+
                     ExceptionUiState.Error.SnackbarError::class -> {
                         var id = 0
                         if (_uiState.value is ExceptionUiState.Error.SnackbarError) {
@@ -73,6 +77,7 @@ class ProductsViewModel @Inject constructor(
                     }
                 }
             }
+
             is NetworkResult.Loading<String> -> {
                 _uiState.value = ExceptionUiState.Loading
             }
@@ -80,12 +85,13 @@ class ProductsViewModel @Inject constructor(
 
     }
 
-    fun fetchAndLoadDataSync(errorClass: KClass<out ExceptionUiState.Error>) = viewModelScope.launch {
-        if (errorClass != ExceptionUiState.Error.SnackbarError::class) {
-            _uiState.value = ExceptionUiState.Loading
+    fun fetchAndLoadDataSync(errorClass: KClass<out ExceptionUiState.Error>) =
+        viewModelScope.launch {
+            if (errorClass != ExceptionUiState.Error.SnackbarError::class) {
+                _uiState.value = ExceptionUiState.Loading
+            }
+            fetchAndLoadData(errorClass)
         }
-        fetchAndLoadData(errorClass)
-    }
 
     val clothes: StateFlow<List<Clothes>> = repository.getAllClothes().stateIn(
         scope = viewModelScope,
@@ -99,21 +105,49 @@ class ProductsViewModel @Inject constructor(
         initialValue = emptyList()
     )
 
-    fun addToCart(clothesId: String) = viewModelScope.launch { repository.addItemInCart(clothesId) }
+    fun addToCart(clothesId: String, size: Size? = null, isQuickAdd: Boolean = false) =
+        viewModelScope.launch {
+            if (isQuickAdd) {
+                val cartItems = clothesInCart.value
+                val existingItem = cartItems.find { it.clothes.id == clothesId }
 
-    fun removeFromCart(clothesId: String) = viewModelScope.launch { repository.removeItemFromCart(clothesId) }
+                if (existingItem != null) {
+                    repository.addItemInCart(clothesId, existingItem.selectedSize?.id)
+                    return@launch
+                }
+            }
 
-    fun getCartAmount(clothesId: String): StateFlow<Int> = repository.getCartAmount(clothesId).stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = 0
-    )
+            repository.addItemInCart(clothesId, size?.id)
+        }
 
-    val clothesInCart: StateFlow<List<CartItem>> = repository.getAllClothesInCart().distinctUntilChanged().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
+    fun removeFromCart(clothesId: String, size: Size? = null, isQuickAdd: Boolean = false) =
+        viewModelScope.launch {
+            if (isQuickAdd) {
+                val cartItems = clothesInCart.value
+                val existingItem = cartItems.find { it.clothes.id == clothesId }
+
+                if (existingItem != null) {
+                    repository.removeItemFromCart(clothesId, existingItem.selectedSize?.id)
+                    return@launch
+                }
+            }
+
+            repository.removeItemFromCart(clothesId, size?.id)
+        }
+
+    fun getCartAmount(clothesId: String): StateFlow<Int> =
+        repository.getCartAmount(clothesId).stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0
+        )
+
+    val clothesInCart: StateFlow<List<CartItem>> =
+        repository.getAllClothesInCart().distinctUntilChanged().stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     fun setCategory(categoryId: String?) = viewModelScope.launch {
         categoryId?.let {
@@ -123,9 +157,23 @@ class ProductsViewModel @Inject constructor(
         }
     }
 
-    val currentCategory: StateFlow<String?> = repository.getSelectedCategory().distinctUntilChanged().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = null
-    )
+    val currentCategory: StateFlow<String?> =
+        repository.getSelectedCategory().distinctUntilChanged().stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
+
+    val cartTotalPrice: StateFlow<Int> = clothesInCart.map { items ->
+        items.sumOf { it.clothes.price * it.amount }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
+
+    fun clearCart() = viewModelScope.launch { repository.clearCart() }
+
+    fun removeCompletelyFromCart(clothesId: String, sizeId: String?) = viewModelScope.launch {
+        repository.removeItemCompletelyFromCart(clothesId, sizeId)
+    }
+    fun checkoutOrder() = viewModelScope.launch {
+        repository.clearCart()
+    }
 }
