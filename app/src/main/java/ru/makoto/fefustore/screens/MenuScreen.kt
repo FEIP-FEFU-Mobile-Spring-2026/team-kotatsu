@@ -25,16 +25,17 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,6 +57,7 @@ import ru.makoto.fefustore.components.CategoryItem
 import ru.makoto.fefustore.components.CategoryPicker
 import ru.makoto.fefustore.components.ClothCard
 import ru.makoto.fefustore.components.ClothCardSkeleton
+import ru.makoto.fefustore.components.CounterButton
 import ru.makoto.fefustore.components.ErrorState
 import ru.makoto.fefustore.ui.theme.AppColors
 import ru.makoto.fefustore.utils.PriceFormatter
@@ -72,9 +74,23 @@ fun MenuScreen(
     val categories by viewModel.categories.collectAsState()
     val currentCategory by viewModel.currentCategory.collectAsState()
     val errorState by viewModel.uiState.collectAsState()
+
+    val cartItems by viewModel.clothesInCart.collectAsState()
+
     var selectedClothes by remember { mutableStateOf<Clothes?>(null) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
     var activeSize by remember(selectedClothes?.id) { mutableStateOf<Size?>(null) }
+
+    // автовыбор размера
+    LaunchedEffect(selectedClothes) {
+        if (selectedClothes != null && activeSize == null) {
+            val existingItem = cartItems.find { it.clothes.id == selectedClothes?.id }
+            if (existingItem != null) {
+                activeSize = existingItem.selectedSize
+            }
+        }
+    }
 
     Column {
         CategoryPicker(
@@ -93,12 +109,14 @@ fun MenuScreen(
                     }
                 }
             }
+
             is ExceptionUiState.Error.BannerError -> {
                 ErrorState(
                     message = newError.message,
                     onRetry = { viewModel.fetchAndLoadDataSync(ExceptionUiState.Error.BannerError::class) }
                 )
             }
+
             else -> {
                 LazyColumn {
                     items(clothes.filter {
@@ -108,175 +126,216 @@ fun MenuScreen(
                             clothes = item,
                             onCardClick = { selectedClothes = item },
                             cartAmount = viewModel.getCartAmount(item.id),
-                            addToCart = { clothesId: String -> viewModel.addToCart(clothesId) },
-                            removeFromCart = { clothesId: String ->
-                                viewModel.removeFromCart(
-                                    clothesId
-                                )
+                            addToCart = { clothesId, size ->
+                                viewModel.addToCart(clothesId, size, isQuickAdd = true)
+                            },
+                            removeFromCart = { clothesId, size ->
+                                viewModel.removeFromCart(clothesId, size, isQuickAdd = true)
                             }
                         )
                     }
                 }
             }
         }
-    }
 
-    if (selectedClothes != null) {
-        val item = selectedClothes!!
-        var showInfoDialog by remember { mutableStateOf(false) }
 
-        if (showInfoDialog) {
-            AlertDialog(
-                onDismissRequest = { showInfoDialog = false },
-                title = { Text(text = "Характеристики") },
-                text = {
-                    Column {
-                        Text(text = "Материал: ${item.material}")
-                        Text(text = "Вес: ${item.weight}")
-                        Text(text = "Сезон: ${item.season}")
-                        Text(text = "Страна производства: ${item.countryOfOrigin}")
+        if (selectedClothes != null) {
+            val item = selectedClothes!!
+            var showInfoDialog by remember { mutableStateOf(false) }
+
+            val existingCartItem = cartItems.find { it.clothes.id == item.id }
+            val sizeIdInCart = existingCartItem?.selectedSize?.id
+            val amountInCart = existingCartItem?.amount ?: 0
+
+            if (showInfoDialog) {
+                AlertDialog(
+                    onDismissRequest = { showInfoDialog = false },
+                    title = { Text(text = "Характеристики") },
+                    text = {
+                        Column {
+                            Text(text = "Материал: ${item.material}")
+                            Text(text = "Вес: ${item.weight}")
+                            Text(text = "Сезон: ${item.season}")
+                            Text(text = "Страна производства: ${item.countryOfOrigin}")
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showInfoDialog = false }) {
+                            Text("Закрыть")
+                        }
                     }
-                },
-                confirmButton = {
-                    TextButton(onClick = { showInfoDialog = false }) {
-                        Text("Закрыть")
-                    }
-                }
-            )
-        }
+                )
+            }
 
-        ModalBottomSheet(
-            onDismissRequest = { selectedClothes = null },
-            sheetState = sheetState,
-            containerColor = Color.White
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.85f)
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ModalBottomSheet(
+                onDismissRequest = { selectedClothes = null },
+                sheetState = sheetState,
+                containerColor = Color.White
             ) {
                 Column(
                     modifier = Modifier
-                        .weight(1f)
-                        .verticalScroll(rememberScrollState())
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.85f)
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
-                    IconButton(
-                        onClick = { selectedClothes = null },
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Назад",
-                            tint = Color.Black
-                        )
-                    }
-
-                    Box(
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
+                            .weight(1f)
+                            .verticalScroll(rememberScrollState())
                     ) {
-                        AsyncImage(
-                            model = item.img,
-                            contentDescription = "Picture",
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier.fillMaxSize()
-                        )
+                        IconButton(
+                            onClick = { selectedClothes = null },
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Назад",
+                                tint = Color.Black
+                            )
+                        }
 
-                        if (item.tags.isNotEmpty()) {
-                            Row(
-                                modifier = Modifier
-                                    .align(Alignment.TopStart)
-                                    .padding(8.dp),
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                item.tags.forEach { tag ->
-                                    Box(
-                                        modifier = Modifier
-                                            .background(AppColors.BrownPrimary, shape = CircleShape)
-                                            .padding(horizontal = 12.dp, vertical = 6.dp)
-                                    ) {
-                                        Text(
-                                            text = tag,
-                                            color = Color.White,
-                                            fontSize = 12.sp,
-                                            fontWeight = FontWeight.Bold
-                                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                        ) {
+                            AsyncImage(
+                                model = item.img,
+                                contentDescription = "Picture",
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier.fillMaxSize()
+                            )
+
+                            if (item.tags.isNotEmpty()) {
+                                Row(
+                                    modifier = Modifier
+                                        .align(Alignment.TopStart)
+                                        .padding(8.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    item.tags.forEach { tag ->
+                                        Box(
+                                            modifier = Modifier
+                                                .background(
+                                                    AppColors.BrownPrimary,
+                                                    shape = CircleShape
+                                                )
+                                                .padding(horizontal = 12.dp, vertical = 6.dp)
+                                        ) {
+                                            Text(
+                                                text = tag,
+                                                color = Color.White,
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = item.title,
-                            style = MaterialTheme.typography.headlineLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
+                        Row(
                             modifier = Modifier
-                                .weight(1f)
-                                .padding(end = 16.dp)
-                        )
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = "Характеристики",
-                            tint = Color(0xFF6A4E46),
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clickable { showInfoDialog = true }
-                        )
-                    }
-                    Text(
-                        text = item.longDescription,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color.Gray,
-                        modifier = Modifier.padding(vertical = 4.dp)
-                    )
-                }
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp, bottom = 24.dp)
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        modifier = Modifier
-                            .horizontalScroll(rememberScrollState())
-                            .padding(bottom = 12.dp)
-                    ) {
-                        item.sizes.forEach { size ->
-                            CategoryItem(
-                                title = size.name.toString(),
-                                isActive = (activeSize?.id ?: "") != size.id,
-                                onClick = { activeSize = size }
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = item.title,
+                                style = MaterialTheme.typography.headlineLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(end = 16.dp)
+                            )
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = "Характеристики",
+                                tint = Color(0xFF6A4E46),
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clickable { showInfoDialog = true }
                             )
                         }
+                        Text(
+                            text = item.longDescription,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.Gray,
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        )
                     }
-                    Button(
-                        onClick = {
-                            viewModel.addToCart(item.id)
-                            selectedClothes = null
-                        },
-                        shape = RoundedCornerShape(10.dp),
+
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(50.dp)
+                            .padding(top = 16.dp, bottom = 24.dp)
                     ) {
-                        Text(
-                            text = "Добавить в корзину - ${PriceFormatter.format(item.price)}",
-                            style = MaterialTheme.typography.bodyLarge
-                        )
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                            modifier = Modifier
+                                .horizontalScroll(rememberScrollState())
+                                .padding(bottom = 12.dp)
+                        ) {
+                            item.sizes.forEach { size ->
+                                CategoryItem(
+                                    title = size.name.toString(),
+                                    isActive = (activeSize?.id ?: "") != size.id,
+                                    onClick = { activeSize = size }
+                                )
+                            }
+                        }
+
+                        if (activeSize == null) {
+                            Button(
+                                onClick = {},
+                                enabled = false,
+                                shape = RoundedCornerShape(10.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(50.dp)
+                            ) {
+                                Text(text = "Выберите размер")
+                            }
+                        } else if (existingCartItem != null && activeSize?.id != sizeIdInCart) {
+                            Button(
+                                onClick = {},
+                                enabled = false,
+                                shape = RoundedCornerShape(10.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(50.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    disabledContainerColor = AppColors.GrayLight,
+                                    disabledContentColor = Color.Gray
+                                )
+                            ) {
+                                Text(text = "Удалите товар другого размера", fontSize = 14.sp)
+                            }
+                        } else if (amountInCart == 0) {
+                            Button(
+                                onClick = { viewModel.addToCart(item.id, activeSize) },
+                                shape = RoundedCornerShape(10.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(50.dp)
+                            ) {
+                                Text(
+                                    text = "Добавить в корзину - ${PriceFormatter.format(item.price)}",
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                        } else {
+                            CounterButton(
+                                amount = amountInCart,
+                                onAdd = { viewModel.addToCart(item.id, activeSize) },
+                                onRemove = { viewModel.removeFromCart(item.id, activeSize) },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                     }
                 }
             }

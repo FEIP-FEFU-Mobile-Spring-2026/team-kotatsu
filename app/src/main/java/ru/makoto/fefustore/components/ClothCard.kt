@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -23,20 +23,22 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.StateFlow
 import ru.makoto.fefustore.Data.DTO.Clothes
+import ru.makoto.fefustore.Data.DTO.Size
 
 @Composable
 fun ClothCard(
     clothes: Clothes,
     onCardClick: () -> Unit,
     cartAmount: StateFlow<Int>,
-    addToCart: (String) -> Unit,
-    removeFromCart: (String) -> Unit
+    addToCart: (String, Size?) -> Unit,
+    removeFromCart: (String, Size?) -> Unit
 ) {
     val cartAmountState by cartAmount.collectAsState()
+    val firstAvailableSize = clothes.sizes.firstOrNull()
 
     Card(
         modifier = Modifier.clickable(onClick = onCardClick),
-        colors = CardDefaults.cardColors(containerColor = colorScheme.background)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
     ) {
         Row(
             modifier = Modifier
@@ -61,12 +63,18 @@ fun ClothCard(
                     Text(clothes.title, fontWeight = FontWeight.Bold)
                     Text(clothes.description, color = Color.Gray)
                 }
-                CounterButton(
-                    clothes = clothes,
-                    cartAmount = cartAmountState,
-                    addToCart = addToCart,
-                    removeFromCart = removeFromCart
-                )
+
+                if (cartAmountState == 0) {
+                    PriceButton(clothes) {
+                        addToCart(clothes.id, firstAvailableSize)
+                    }
+                } else {
+                    CounterButton(
+                        amount = cartAmountState,
+                        onAdd = { addToCart(clothes.id, firstAvailableSize) },
+                        onRemove = { removeFromCart(clothes.id, firstAvailableSize) }
+                    )
+                }
             }
         }
     }
