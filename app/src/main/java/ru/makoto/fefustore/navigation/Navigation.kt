@@ -17,37 +17,41 @@ import ru.makoto.fefustore.screens.MenuScreen
 import ru.makoto.fefustore.viewmodels.ProductsViewModel
 
 sealed class Destination(
-    var route: String, val label: String,
-    val icon: ImageVector
+    var route: String,
+    val label: String,
+    val icon: ImageVector,
 ) {
     data object MENU : Destination("menu", "Меню", Icons.Outlined.Home)
+
     data object CART : Destination("cart", "Корзина", Icons.Outlined.ShoppingCart)
 
-    class CARD(id: String) : Destination("card/$id", "Карточка", Icons.Outlined.ShoppingCart)
+    class CARD(
+        id: String,
+    ) : Destination("card/$id", "Карточка", Icons.Outlined.ShoppingCart)
 }
 
 @Composable
 fun AppNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    viewModel: ProductsViewModel
+    viewModel: ProductsViewModel,
 ) {
     NavHost(
         navController = navController,
         startDestination = Destination.MENU.route,
-        modifier = modifier
+        modifier = modifier,
     ) {
         composable(Destination.MENU.route) { MenuScreen(navController, viewModel) }
         composable(Destination.CART.route) {
             CartScreen(
                 navController,
-                viewModel
+                viewModel,
             )
         }
 
         composable(
             Destination.CARD("{id}").route,
-            arguments = listOf(navArgument("id") { type = NavType.StringType })
+            arguments = listOf(navArgument("id") { type = NavType.StringType }),
         ) {
             val cardId = it.arguments?.getString("id")!!
             CardScreen(cardId, navController, viewModel)

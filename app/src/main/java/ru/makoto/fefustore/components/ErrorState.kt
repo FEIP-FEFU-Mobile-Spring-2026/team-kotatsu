@@ -27,20 +27,21 @@ import ru.makoto.fefustore.ui.theme.AppColors
 fun ErrorState(
     modifier: Modifier = Modifier,
     message: String = "Не удалось загрузить товары. Проверьте интернет-соединение.",
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
 ) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(24.dp),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Icon(
             imageVector = Icons.Outlined.Warning,
             contentDescription = "Ошибка загрузки",
             tint = AppColors.BrownPrimary,
-            modifier = Modifier.size(64.dp)
+            modifier = Modifier.size(64.dp),
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -49,7 +50,7 @@ fun ErrorState(
             text = "Произошла ошибка",
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp,
-            color = Color.Black
+            color = Color.Black,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -59,23 +60,26 @@ fun ErrorState(
             color = Color.Gray,
             textAlign = TextAlign.Center,
             fontSize = 14.sp,
-            lineHeight = 20.sp
+            lineHeight = 20.sp,
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = onRetry,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = AppColors.BrownPrimary,
-                contentColor = AppColors.White
-            ),
-            shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+            colors =
+                ButtonDefaults.buttonColors(
+                    containerColor = AppColors.BrownPrimary,
+                    contentColor = AppColors.White,
+                ),
+            shape =
+                androidx.compose.foundation.shape
+                    .RoundedCornerShape(8.dp),
         ) {
             Text(
                 text = "Повторить попытку",
                 fontWeight = FontWeight.SemiBold,
-                fontSize = 15.sp
+                fontSize = 15.sp,
             )
         }
     }

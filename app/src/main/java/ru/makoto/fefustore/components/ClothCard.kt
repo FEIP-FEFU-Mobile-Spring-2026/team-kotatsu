@@ -22,8 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.StateFlow
-import ru.makoto.fefustore.Data.DTO.Clothes
-import ru.makoto.fefustore.Data.DTO.Size
+import ru.makoto.fefustore.data.dto.Clothes
+import ru.makoto.fefustore.data.dto.Size
 
 @Composable
 fun ClothCard(
@@ -31,32 +31,34 @@ fun ClothCard(
     onCardClick: () -> Unit,
     cartAmount: StateFlow<Int>,
     addToCart: (String, Size?) -> Unit,
-    removeFromCart: (String, Size?) -> Unit
+    removeFromCart: (String, Size?) -> Unit,
 ) {
     val cartAmountState by cartAmount.collectAsState()
     val firstAvailableSize = clothes.sizes.firstOrNull()
 
     Card(
         modifier = Modifier.clickable(onClick = onCardClick),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp)
-                .height(200.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(20.dp)
+                    .height(200.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             AsyncImage(
                 modifier = Modifier.weight(1f),
                 model = clothes.img,
-                contentDescription = "Picture"
+                contentDescription = "Picture",
             )
             Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .padding(start = 5.dp),
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(start = 5.dp),
                 verticalArrangement = Arrangement.SpaceBetween,
             ) {
                 Column {
@@ -72,7 +74,7 @@ fun ClothCard(
                     CounterButton(
                         amount = cartAmountState,
                         onAdd = { addToCart(clothes.id, firstAvailableSize) },
-                        onRemove = { removeFromCart(clothes.id, firstAvailableSize) }
+                        onRemove = { removeFromCart(clothes.id, firstAvailableSize) },
                     )
                 }
             }

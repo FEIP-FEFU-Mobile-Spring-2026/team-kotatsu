@@ -1,6 +1,5 @@
 package ru.makoto.fefustore.components
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,7 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import ru.makoto.fefustore.Data.DTO.Category
+import ru.makoto.fefustore.data.dto.Category
 import ru.makoto.fefustore.ui.theme.AppColors
 
 @Composable
@@ -25,31 +24,32 @@ fun CategoryPicker(
     currentCategory: String?,
     changeCategory: (Category?) -> Unit,
 ) {
-
     ScrollableTabRow(
         selectedTabIndex = if (currentCategory == null) 0 else categories.indexOf(categories.find { it.id == currentCategory }) + 1,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(55.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(55.dp),
         containerColor = AppColors.White,
         edgePadding = 2.dp,
         indicator = {},
     ) {
-
         Tab(
             selected = currentCategory == null,
             onClick = { changeCategory(null) },
             selectedContentColor = AppColors.White,
             unselectedContentColor = AppColors.Black,
-            modifier = Modifier
-                .padding(horizontal = 7.dp, vertical = 20.dp)
-                .clip(CircleShape)
-                .background(
-                    if (currentCategory == null)
-                        AppColors.BrownPrimary
-                    else
-                        AppColors.GrayLight
-                )
+            modifier =
+                Modifier
+                    .padding(horizontal = 7.dp, vertical = 20.dp)
+                    .clip(CircleShape)
+                    .background(
+                        if (currentCategory == null) {
+                            AppColors.BrownPrimary
+                        } else {
+                            AppColors.GrayLight
+                        },
+                    ),
 //                    text = {
 //                CategoryItem(
 //                    title = "Новинки",
@@ -58,7 +58,7 @@ fun CategoryPicker(
         ) {
             Text(
                 text = "Новинки",
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
             )
         }
 
@@ -85,19 +85,21 @@ fun CategoryPicker(
                 onClick = { changeCategory(category) },
                 selectedContentColor = AppColors.White,
                 unselectedContentColor = AppColors.Black,
-                modifier = Modifier
-                    .padding(horizontal = 7.dp, vertical = 20.dp)
-                    .clip(CircleShape)
-                    .background(
-                        if (isActive)
-                            AppColors.BrownPrimary
-                        else
-                            AppColors.GrayLight
-                    )
+                modifier =
+                    Modifier
+                        .padding(horizontal = 7.dp, vertical = 20.dp)
+                        .clip(CircleShape)
+                        .background(
+                            if (isActive) {
+                                AppColors.BrownPrimary
+                            } else {
+                                AppColors.GrayLight
+                            },
+                        ),
             ) {
                 Text(
                     text = category.name,
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    modifier = Modifier.padding(horizontal = 16.dp),
                 )
             }
         }
@@ -108,17 +110,17 @@ fun CategoryPicker(
 fun CategoryItem(
     title: String,
     isActive: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Button(
         onClick = onClick,
         shape = CircleShape,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (!isActive) AppColors.BrownPrimary else AppColors.GrayLight,
-            contentColor = if (!isActive) AppColors.White else AppColors.Black
-        ),
+        colors =
+            ButtonDefaults.buttonColors(
+                containerColor = if (!isActive) AppColors.BrownPrimary else AppColors.GrayLight,
+                contentColor = if (!isActive) AppColors.White else AppColors.Black,
+            ),
     ) {
         Text(text = title)
     }
 }
-

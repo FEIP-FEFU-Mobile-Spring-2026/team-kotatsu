@@ -2,14 +2,13 @@ package ru.makoto.fefustore
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import ru.makoto.fefustore.Data.DTO.Category
-import ru.makoto.fefustore.Data.DTO.Clothes
-import ru.makoto.fefustore.Data.DTO.Size
-import ru.makoto.fefustore.Data.DTO.SizeName
-import ru.makoto.fefustore.Data.DTO.toEntity
+import ru.makoto.fefustore.data.dto.Category
+import ru.makoto.fefustore.data.dto.Clothes
+import ru.makoto.fefustore.data.dto.Size
+import ru.makoto.fefustore.data.dto.SizeName
+import ru.makoto.fefustore.data.dto.toEntity
 
 class MappingTest {
-
     @Test
     fun `Category toEntity maps fields correctly`() {
         val dtoCategory = Category(id = "cat_shoes", name = "Обувь")
@@ -21,21 +20,22 @@ class MappingTest {
 
     @Test
     fun `Clothes toEntity maps crucial data fields correctly`() {
-        val dtoClothes = Clothes(
-            id = "item_001",
-            title = "Худи",
-            description = "Стильный худи",
-            longDescription = "Описание товара",
-            price = 499000,
-            img = "url_to_image",
-            category = "cat_outerwear",
-            material = "100% хлопок",
-            weight = "500 г",
-            season = "Winter",
-            countryOfOrigin = "China",
-            sizes = emptyList(),
-            tags = emptyList()
-        )
+        val dtoClothes =
+            Clothes(
+                id = "item_001",
+                title = "Худи",
+                description = "Стильный худи",
+                longDescription = "Описание товара",
+                price = 499000,
+                img = "url_to_image",
+                category = "cat_outerwear",
+                material = "100% хлопок",
+                weight = "500 г",
+                season = "Winter",
+                countryOfOrigin = "China",
+                sizes = emptyList(),
+                tags = emptyList(),
+            )
 
         val entity = dtoClothes.toEntity()
 

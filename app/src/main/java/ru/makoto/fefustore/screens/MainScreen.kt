@@ -30,20 +30,22 @@ fun MainScreen(viewModel: ProductsViewModel) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val clothesInCart by viewModel.clothesInCart.collectAsState()
-    val cartCount = remember(clothesInCart) {
-        clothesInCart.sumOf { it.amount }
-    }
+    val cartCount =
+        remember(clothesInCart) {
+            clothesInCart.sumOf { it.amount }
+        }
 
     LaunchedEffect(errorState) {
         Log.d("NEW STATE", errorState.toString())
         when (errorState) {
             is ExceptionUiState.Error.SnackbarError -> {
                 val errorState = errorState as ExceptionUiState.Error.SnackbarError
-                val result = snackbarHostState.showSnackbar(
-                    message = errorState.message,
-                    actionLabel = "Повторить попытку",
-                    duration = SnackbarDuration.Indefinite
-                )
+                val result =
+                    snackbarHostState.showSnackbar(
+                        message = errorState.message,
+                        actionLabel = "Повторить попытку",
+                        duration = SnackbarDuration.Indefinite,
+                    )
 
                 if (result == SnackbarResult.ActionPerformed) {
                     viewModel.fetchAndLoadDataSync(ExceptionUiState.Error.SnackbarError::class)
@@ -60,16 +62,16 @@ fun MainScreen(viewModel: ProductsViewModel) {
             if (currentRoute?.startsWith("card") != true) {
                 CustomBottomBar(
                     navController = navController,
-                    cartCount = cartCount
+                    cartCount = cartCount,
                 )
             }
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { paddingValues ->
         AppNavHost(
             navController = navController,
             viewModel = viewModel,
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier.padding(paddingValues),
         )
     }
 }
