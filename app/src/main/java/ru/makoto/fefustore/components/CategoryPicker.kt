@@ -19,9 +19,9 @@ import ru.makoto.fefustore.ui.theme.AppColors
 
 @Composable
 fun CategoryPicker(
-    modifier: Modifier,
     categories: List<Category>,
     currentCategory: String?,
+    modifier: Modifier = Modifier,
     changeCategory: (Category?) -> Unit,
 ) {
     ScrollableTabRow(

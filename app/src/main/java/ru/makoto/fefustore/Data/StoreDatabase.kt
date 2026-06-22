@@ -2,8 +2,20 @@ package ru.makoto.fefustore.data
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import ru.makoto.fefustore.data.dao.*
-import ru.makoto.fefustore.data.entity.*
+import ru.makoto.fefustore.data.dao.CartDAO
+import ru.makoto.fefustore.data.dao.CategoryDAO
+import ru.makoto.fefustore.data.dao.ClothesDAO
+import ru.makoto.fefustore.data.dao.ClothesSizeDAO
+import ru.makoto.fefustore.data.dao.ClothesTagDAO
+import ru.makoto.fefustore.data.dao.SelectedCategoryDAO
+import ru.makoto.fefustore.data.dao.TagDAO
+import ru.makoto.fefustore.data.entity.CartEntity
+import ru.makoto.fefustore.data.entity.CategoryEntity
+import ru.makoto.fefustore.data.entity.ClothesEntity
+import ru.makoto.fefustore.data.entity.ClothesSizeEntity
+import ru.makoto.fefustore.data.entity.ClothesTagEntity
+import ru.makoto.fefustore.data.entity.SelectedCategoryEntity
+import ru.makoto.fefustore.data.entity.TagEntity
 
 @Database(
     entities = [

@@ -1,11 +1,10 @@
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
-    alias(libs.plugins.kotlin.android)
-    id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
 }
 
 android {
@@ -41,9 +40,6 @@ android {
         compose = true
         buildConfig = true
     }
-//    kotlinOptions {
-//        jvmTarget = "11"
-//    }
     configurations.all {
         resolutionStrategy {
             force("org.jetbrains.kotlin:kotlin-metadata-jvm:2.4.0")
@@ -57,13 +53,6 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEa
     }
 }
 
-ktlint {
-    android.set(true)
-    ignoreFailures.set(false)
-    reporters {
-        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN)
-    }
-}
 
 dependencies {
     implementation(libs.androidx.core.ktx)
