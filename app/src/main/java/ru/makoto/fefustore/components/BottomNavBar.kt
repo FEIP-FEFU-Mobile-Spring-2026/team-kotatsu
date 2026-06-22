@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,11 +24,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import ru.makoto.fefustore.navigation.Destination
+import ru.makoto.fefustore.ui.theme.AppColors
 import ru.makoto.fefustore.utils.noRippleClickable
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomBottomBar(
     navController: NavHostController,
+    cartCount: Int,
     modifier: Modifier = Modifier
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -38,7 +44,7 @@ fun CustomBottomBar(
             .navigationBarsPadding()
     ) {
         Row(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 12.dp, bottom = 12.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
@@ -46,7 +52,6 @@ fun CustomBottomBar(
         ) {
             listOf(Destination.MENU, Destination.CART).forEach { destination ->
                 val isSelected = currentRoute == destination.route
-
                 val contentColor = if (isSelected) Color.Black else Color.Gray
 
                 Column(
@@ -57,11 +62,30 @@ fun CustomBottomBar(
                     },
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Icon(
-                        imageVector = destination.icon,
-                        contentDescription = destination.label,
-                        tint = contentColor
-                    )
+                    if (destination == Destination.CART && cartCount > 0) {
+                        BadgedBox(
+                            badge = {
+                                Badge(
+                                    containerColor = AppColors.BrownPrimary,
+                                    contentColor = AppColors.White
+                                ) {
+                                    Text(text = cartCount.toString(), fontSize = 10.sp)
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = destination.icon,
+                                contentDescription = destination.label,
+                                tint = contentColor
+                            )
+                        }
+                    } else {
+                        Icon(
+                            imageVector = destination.icon,
+                            contentDescription = destination.label,
+                            tint = contentColor
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(4.dp))
 

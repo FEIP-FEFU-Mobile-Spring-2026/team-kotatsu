@@ -7,6 +7,8 @@ object AppColors {
     val BrownPrimary = Color(0xFF67493D)
     val BrownDark = Color(0xFF623A29)
     val BeigeLight = Color(0xFFF6EFEB)
+    val BrownSecondary = Color(0xFFA47764)
+    val BrownDisabled = Color(0xFFD4BDB3)
     val GrayLight = Color(0xFFE8E8E8)
     val GrayBackground = Color(0xFFF7F7F7)
     val TextGray = Color(0xFF757575)
