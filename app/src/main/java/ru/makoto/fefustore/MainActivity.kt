@@ -12,7 +12,6 @@ import ru.makoto.fefustore.viewmodels.ProductsViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
     val viewModel: ProductsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {

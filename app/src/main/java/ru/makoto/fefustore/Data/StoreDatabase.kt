@@ -1,9 +1,9 @@
-package ru.makoto.fefustore.Data
+package ru.makoto.fefustore.data
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import ru.makoto.fefustore.Data.DAO.*
-import ru.makoto.fefustore.Data.Entity.*
+import ru.makoto.fefustore.data.dao.*
+import ru.makoto.fefustore.data.entity.*
 
 @Database(
     entities = [
@@ -13,19 +13,23 @@ import ru.makoto.fefustore.Data.Entity.*
         ClothesSizeEntity::class,
         ClothesTagEntity::class,
         CartEntity::class,
-        SelectedCategoryEntity::class
+        SelectedCategoryEntity::class,
     ],
     version = 3,
-    exportSchema = false
+    exportSchema = false,
 )
 abstract class StoreDatabase : RoomDatabase() {
-
     abstract fun categoryDAO(): CategoryDAO
-    abstract fun clothesDAO(): ClothesDAO
-    abstract fun tagDAO(): TagDAO
-    abstract fun clothesSizeDAO(): ClothesSizeDAO
-    abstract fun clothesTagDAO(): ClothesTagDAO
-    abstract fun cartDAO(): CartDAO
-    abstract fun selectedCategoryDAO(): SelectedCategoryDAO
 
+    abstract fun clothesDAO(): ClothesDAO
+
+    abstract fun tagDAO(): TagDAO
+
+    abstract fun clothesSizeDAO(): ClothesSizeDAO
+
+    abstract fun clothesTagDAO(): ClothesTagDAO
+
+    abstract fun cartDAO(): CartDAO
+
+    abstract fun selectedCategoryDAO(): SelectedCategoryDAO
 }

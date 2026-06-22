@@ -60,7 +60,7 @@ import ru.makoto.fefustore.viewmodels.ProductsViewModel
 @Composable
 fun CartScreen(
     navController: NavController,
-    viewModel: ProductsViewModel
+    viewModel: ProductsViewModel,
 ) {
     val clothesInCart by viewModel.clothesInCart.collectAsState()
     val totalPrice by viewModel.cartTotalPrice.collectAsState()
@@ -84,13 +84,13 @@ fun CartScreen(
                 navController.popBackStack()
             },
             sheetState = sheetState,
-            containerColor = Color.White
+            containerColor = Color.White,
         ) {
             SuccessOrder(
                 onReturnHomeClick = {
                     showSuccessSheet = false
                     navController.popBackStack()
-                }
+                },
             )
         }
     }
@@ -105,7 +105,7 @@ fun CartScreen(
                     onClick = {
                         viewModel.clearCart()
                         showClearDialog = false
-                    }
+                    },
                 ) {
                     Text("Да", color = AppColors.BrownPrimary)
                 }
@@ -114,7 +114,7 @@ fun CartScreen(
                 TextButton(onClick = { showClearDialog = false }) {
                     Text("Отмена", color = AppColors.BrownPrimary)
                 }
-            }
+            },
         )
     }
 
@@ -136,38 +136,40 @@ fun CartScreen(
                             Icon(
                                 Icons.Default.Delete,
                                 contentDescription = "Очистить",
-                                tint = Color.LightGray
+                                tint = Color.LightGray,
                             )
                         }
                     }
                 },
                 windowInsets = WindowInsets(0, 0, 0, 0),
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color.White
-                )
+                colors =
+                    TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = Color.White,
+                    ),
             )
         },
         bottomBar = {
             if (clothesInCart.isNotEmpty()) {
                 Surface(
                     color = Color.White,
-                    shadowElevation = 8.dp
+                    shadowElevation = 8.dp,
                 ) {
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 20.dp)
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 20.dp),
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text("Итого", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                             Text(
                                 text = PriceFormatter.format(totalPrice),
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp
+                                fontSize = 18.sp,
                             )
                         }
 
@@ -179,40 +181,44 @@ fun CartScreen(
                                 showSuccessSheet = true
                             },
                             enabled = isFormValid,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(56.dp),
                             shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = AppColors.BrownSecondary,
-                                disabledContainerColor = AppColors.BrownDisabled,
-                                contentColor = Color.White,
-                                disabledContentColor = Color.White
-                            )
+                            colors =
+                                ButtonDefaults.buttonColors(
+                                    containerColor = AppColors.BrownSecondary,
+                                    disabledContainerColor = AppColors.BrownDisabled,
+                                    contentColor = Color.White,
+                                    disabledContentColor = Color.White,
+                                ),
                         ) {
                             Text("Оформить", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                         }
                     }
                 }
             }
-        }
+        },
     ) { paddingValues ->
         if (clothesInCart.isEmpty()) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                contentAlignment = Alignment.Center,
             ) {
                 Text("Корзина пуста", color = AppColors.TextGray, fontSize = 16.sp)
             }
         } else {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(horizontal = 16.dp),
-                contentPadding = PaddingValues(bottom = 24.dp)
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .padding(horizontal = 16.dp),
+                contentPadding = PaddingValues(bottom = 24.dp),
             ) {
                 items(clothesInCart) { cartItem ->
                     CartItemCard(
@@ -221,15 +227,15 @@ fun CartScreen(
                         onRemove = {
                             viewModel.removeFromCart(
                                 cartItem.clothes.id,
-                                cartItem.selectedSize
+                                cartItem.selectedSize,
                             )
                         },
                         onDeleteCompletely = {
                             viewModel.removeCompletelyFromCart(
                                 cartItem.clothes.id,
-                                cartItem.selectedSize?.id
+                                cartItem.selectedSize?.id,
                             )
-                        }
+                        },
                     )
                     HorizontalDivider(color = AppColors.GrayBackground, thickness = 1.dp)
                 }
@@ -241,7 +247,7 @@ fun CartScreen(
                         value = name,
                         onValueChange = { name = it },
                         placeholder = "Имя*",
-                        singleLine = true
+                        singleLine = true,
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -251,7 +257,7 @@ fun CartScreen(
                         onValueChange = { email = it },
                         placeholder = "Почта*",
                         singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -261,7 +267,7 @@ fun CartScreen(
                         onValueChange = { comment = it },
                         placeholder = "Комментарий к заказу",
                         singleLine = false,
-                        modifier = Modifier.height(100.dp)
+                        modifier = Modifier.height(100.dp),
                     )
                 }
             }
@@ -272,17 +278,18 @@ fun CartScreen(
 @Composable
 fun SuccessOrder(onReturnHomeClick: () -> Unit) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(24.dp)
-            .padding(bottom = 32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(24.dp)
+                .padding(bottom = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
             imageVector = Icons.Outlined.CheckCircle,
             contentDescription = "Success",
             modifier = Modifier.size(80.dp),
-            tint = AppColors.BrownSecondary
+            tint = AppColors.BrownSecondary,
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -291,7 +298,7 @@ fun SuccessOrder(onReturnHomeClick: () -> Unit) {
             text = "Заказ успешно оформлен",
             fontWeight = FontWeight.Bold,
             fontSize = 22.sp,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -300,18 +307,19 @@ fun SuccessOrder(onReturnHomeClick: () -> Unit) {
             text = "Подтверждение и чек отправили на\nвашу почту",
             color = AppColors.TextGray,
             fontSize = 15.sp,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
         Button(
             onClick = onReturnHomeClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
             shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = AppColors.BrownSecondary)
+            colors = ButtonDefaults.buttonColors(containerColor = AppColors.BrownSecondary),
         ) {
             Text("Вернуться на главную", fontSize = 16.sp, color = Color.White)
         }
