@@ -39,15 +39,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import ru.makoto.fefustore.Data.DTO.Size
 import ru.makoto.fefustore.components.CategoryItem
+import ru.makoto.fefustore.data.dto.Size
 import ru.makoto.fefustore.ui.theme.AppColors
 import ru.makoto.fefustore.utils.PriceFormatter
 import ru.makoto.fefustore.viewmodels.ProductsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CardScreen(id: String, navController: NavController, viewModel: ProductsViewModel) {
+fun CardScreen(
+    id: String,
+    navController: NavController,
+    viewModel: ProductsViewModel,
+) {
     val clothes by viewModel.clothes.collectAsState()
 
     val item = clothes.find { it.id == id }
@@ -70,12 +74,12 @@ fun CardScreen(id: String, navController: NavController, viewModel: ProductsView
                 TextButton(onClick = { showInfoDialog = false }) {
                     Text("Закрыть")
                 }
-            }
+            },
         )
     }
 
     Scaffold(
-       topBar = {
+        topBar = {
             TopAppBar(title = {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(Icons.Default.ArrowBack, "icon")
@@ -84,19 +88,20 @@ fun CardScreen(id: String, navController: NavController, viewModel: ProductsView
         },
         bottomBar = {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp),
             ) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(5.dp),
-                    modifier = Modifier.horizontalScroll(rememberScrollState())
+                    modifier = Modifier.horizontalScroll(rememberScrollState()),
                 ) {
                     item?.sizes?.forEach {
                         CategoryItem(
                             it.name.toString(),
                             isActive = (activeSize.value?.id ?: "") != it.id,
-                            onClick = { activeSize.value = it }
+                            onClick = { activeSize.value = it },
                         )
                     }
                 }
@@ -108,50 +113,53 @@ fun CardScreen(id: String, navController: NavController, viewModel: ProductsView
                         }
                     },
                     shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
                 ) {
                     Text(
                         text = "Добавить в корзину - ${item?.price?.let { PriceFormatter.format(it) } ?: "Undefined Price"}",
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodyLarge,
                     )
                 }
             }
-        }
-
+        },
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 AsyncImage(
                     alignment = Alignment.Center,
                     contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .height(200.dp)
-                        .fillMaxWidth(),
+                    modifier =
+                        Modifier
+                            .height(200.dp)
+                            .fillMaxWidth(),
                     model = item?.img,
-                    contentDescription = "Picture"
+                    contentDescription = "Picture",
                 )
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(5.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(5.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         text = item?.title ?: "Undefined Title",
                         style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Black
+                        color = Color.Black,
                     )
                     Icon(
                         imageVector = Icons.Default.Info,
                         contentDescription = "Характеристики",
                         tint = AppColors.BrownPrimary,
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clickable { showInfoDialog = true }
+                        modifier =
+                            Modifier
+                                .size(40.dp)
+                                .clickable { showInfoDialog = true },
                     )
                 }
 
@@ -159,7 +167,7 @@ fun CardScreen(id: String, navController: NavController, viewModel: ProductsView
                     modifier = Modifier.padding(5.dp),
                     text = item?.longDescription ?: "Undefined Description",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = Color.Gray
+                    color = Color.Gray,
                 )
             }
         }

@@ -25,55 +25,61 @@ import ru.makoto.fefustore.utils.shimmerEffect
 fun ClothCardSkeleton() {
     Card(
         modifier = Modifier.height(240.dp),
-        colors = CardDefaults.cardColors(containerColor = colorScheme.background)
+        colors = CardDefaults.cardColors(containerColor = colorScheme.background),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp)
-                .height(200.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(20.dp)
+                    .height(200.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .clip(RoundedCornerShape(8.dp))
-                    .shimmerEffect()
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(8.dp))
+                        .shimmerEffect(),
             )
 
             Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .padding(start = 5.dp),
-                verticalArrangement = Arrangement.SpaceBetween
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(start = 5.dp),
+                verticalArrangement = Arrangement.SpaceBetween,
             ) {
                 Column {
                     Box(
-                        modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .height(18.dp)
-                            .clip(RoundedCornerShape(4.dp))
-                            .shimmerEffect()
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(0.9f)
+                                .height(18.dp)
+                                .clip(RoundedCornerShape(4.dp))
+                                .shimmerEffect(),
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
                     Box(
-                        modifier = Modifier
-                            .fillMaxWidth(0.7f)
-                            .height(14.dp)
-                            .clip(RoundedCornerShape(4.dp))
-                            .shimmerEffect()
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(0.7f)
+                                .height(14.dp)
+                                .clip(RoundedCornerShape(4.dp))
+                                .shimmerEffect(),
                     )
                 }
 
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .clip(RoundedCornerShape(5.dp))
-                        .shimmerEffect()
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                            .clip(RoundedCornerShape(5.dp))
+                            .shimmerEffect(),
                 )
             }
         }

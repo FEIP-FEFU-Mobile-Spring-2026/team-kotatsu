@@ -28,24 +28,26 @@ fun CounterButton(
     amount: Int,
     onAdd: () -> Unit,
     onRemove: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier
-            .height(50.dp)
-            .background(
-                AppColors.GrayLight,
-                shape = RoundedCornerShape(5.dp)
-            ),
+        modifier =
+            modifier
+                .height(50.dp)
+                .background(
+                    AppColors.GrayLight,
+                    shape = RoundedCornerShape(5.dp),
+                ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceAround,
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(50.dp)
-                .clickable { onRemove() },
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .fillMaxHeight()
+                    .width(50.dp)
+                    .clickable { onRemove() },
+            contentAlignment = Alignment.Center,
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.remove_24px),
@@ -55,19 +57,20 @@ fun CounterButton(
 
         Text(
             modifier = Modifier.padding(horizontal = 20.dp),
-            text = amount.toString()
+            text = amount.toString(),
         )
 
         Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(50.dp)
-                .clickable { onAdd() },
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .fillMaxHeight()
+                    .width(50.dp)
+                    .clickable { onAdd() },
+            contentAlignment = Alignment.Center,
         ) {
             Icon(
                 imageVector = Icons.Outlined.Add,
-                contentDescription = "Добавить"
+                contentDescription = "Добавить",
             )
         }
     }

@@ -51,14 +51,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import ru.makoto.fefustore.Data.DTO.Clothes
-import ru.makoto.fefustore.Data.DTO.Size
 import ru.makoto.fefustore.components.CategoryItem
 import ru.makoto.fefustore.components.CategoryPicker
 import ru.makoto.fefustore.components.ClothCard
 import ru.makoto.fefustore.components.ClothCardSkeleton
 import ru.makoto.fefustore.components.CounterButton
 import ru.makoto.fefustore.components.ErrorState
+import ru.makoto.fefustore.data.dto.Clothes
+import ru.makoto.fefustore.data.dto.Size
 import ru.makoto.fefustore.ui.theme.AppColors
 import ru.makoto.fefustore.utils.PriceFormatter
 import ru.makoto.fefustore.viewmodels.ExceptionUiState
@@ -113,15 +113,17 @@ fun MenuScreen(
             is ExceptionUiState.Error.BannerError -> {
                 ErrorState(
                     message = newError.message,
-                    onRetry = { viewModel.fetchAndLoadDataSync(ExceptionUiState.Error.BannerError::class) }
+                    onRetry = { viewModel.fetchAndLoadDataSync(ExceptionUiState.Error.BannerError::class) },
                 )
             }
 
             else -> {
                 LazyColumn {
-                    items(clothes.filter {
-                        (currentCategory == null && it.tags.contains("New")) || (it.category == currentCategory)
-                    }) { item ->
+                    items(
+                        clothes.filter {
+                            (currentCategory == null && it.tags.contains("New")) || (it.category == currentCategory)
+                        },
+                    ) { item ->
                         ClothCard(
                             clothes = item,
                             onCardClick = { selectedClothes = item },
@@ -131,13 +133,12 @@ fun MenuScreen(
                             },
                             removeFromCart = { clothesId, size ->
                                 viewModel.removeFromCart(clothesId, size, isQuickAdd = true)
-                            }
+                            },
                         )
                     }
                 }
             }
         }
-
 
         if (selectedClothes != null) {
             val item = selectedClothes!!
@@ -163,70 +164,74 @@ fun MenuScreen(
                         TextButton(onClick = { showInfoDialog = false }) {
                             Text("Закрыть")
                         }
-                    }
+                    },
                 )
             }
 
             ModalBottomSheet(
                 onDismissRequest = { selectedClothes = null },
                 sheetState = sheetState,
-                containerColor = Color.White
+                containerColor = Color.White,
             ) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.85f)
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(0.85f)
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
                 ) {
                     Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .verticalScroll(rememberScrollState())
+                        modifier =
+                            Modifier
+                                .weight(1f)
+                                .verticalScroll(rememberScrollState()),
                     ) {
                         IconButton(
                             onClick = { selectedClothes = null },
-                            modifier = Modifier.padding(bottom = 8.dp)
+                            modifier = Modifier.padding(bottom = 8.dp),
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
                                 contentDescription = "Назад",
-                                tint = Color.Black
+                                tint = Color.Black,
                             )
                         }
 
                         Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp)
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp),
                         ) {
                             AsyncImage(
                                 model = item.img,
                                 contentDescription = "Picture",
                                 contentScale = ContentScale.Fit,
-                                modifier = Modifier.fillMaxSize()
+                                modifier = Modifier.fillMaxSize(),
                             )
 
                             if (item.tags.isNotEmpty()) {
                                 Row(
-                                    modifier = Modifier
-                                        .align(Alignment.TopStart)
-                                        .padding(8.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                    modifier =
+                                        Modifier
+                                            .align(Alignment.TopStart)
+                                            .padding(8.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
                                 ) {
                                     item.tags.forEach { tag ->
                                         Box(
-                                            modifier = Modifier
-                                                .background(
-                                                    AppColors.BrownPrimary,
-                                                    shape = CircleShape
-                                                )
-                                                .padding(horizontal = 12.dp, vertical = 6.dp)
+                                            modifier =
+                                                Modifier
+                                                    .background(
+                                                        AppColors.BrownPrimary,
+                                                        shape = CircleShape,
+                                                    ).padding(horizontal = 12.dp, vertical = 6.dp),
                                         ) {
                                             Text(
                                                 text = tag,
                                                 color = Color.White,
                                                 fontSize = 12.sp,
-                                                fontWeight = FontWeight.Bold
+                                                fontWeight = FontWeight.Bold,
                                             )
                                         }
                                     }
@@ -235,11 +240,12 @@ fun MenuScreen(
                         }
 
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
                                 text = item.title,
@@ -248,43 +254,47 @@ fun MenuScreen(
                                 color = Color.Black,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(end = 16.dp)
+                                modifier =
+                                    Modifier
+                                        .weight(1f)
+                                        .padding(end = 16.dp),
                             )
                             Icon(
                                 imageVector = Icons.Default.Info,
                                 contentDescription = "Характеристики",
                                 tint = Color(0xFF6A4E46),
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clickable { showInfoDialog = true }
+                                modifier =
+                                    Modifier
+                                        .size(40.dp)
+                                        .clickable { showInfoDialog = true },
                             )
                         }
                         Text(
                             text = item.longDescription,
                             style = MaterialTheme.typography.bodyLarge,
                             color = Color.Gray,
-                            modifier = Modifier.padding(vertical = 4.dp)
+                            modifier = Modifier.padding(vertical = 4.dp),
                         )
                     }
 
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp, bottom = 24.dp)
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp, bottom = 24.dp),
                     ) {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(5.dp),
-                            modifier = Modifier
-                                .horizontalScroll(rememberScrollState())
-                                .padding(bottom = 12.dp)
+                            modifier =
+                                Modifier
+                                    .horizontalScroll(rememberScrollState())
+                                    .padding(bottom = 12.dp),
                         ) {
                             item.sizes.forEach { size ->
                                 CategoryItem(
                                     title = size.name.toString(),
                                     isActive = (activeSize?.id ?: "") != size.id,
-                                    onClick = { activeSize = size }
+                                    onClick = { activeSize = size },
                                 )
                             }
                         }
@@ -294,9 +304,10 @@ fun MenuScreen(
                                 onClick = {},
                                 enabled = false,
                                 shape = RoundedCornerShape(10.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(50.dp)
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(50.dp),
                             ) {
                                 Text(text = "Выберите размер")
                             }
@@ -305,13 +316,15 @@ fun MenuScreen(
                                 onClick = {},
                                 enabled = false,
                                 shape = RoundedCornerShape(10.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(50.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    disabledContainerColor = AppColors.GrayLight,
-                                    disabledContentColor = Color.Gray
-                                )
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(50.dp),
+                                colors =
+                                    ButtonDefaults.buttonColors(
+                                        disabledContainerColor = AppColors.GrayLight,
+                                        disabledContentColor = Color.Gray,
+                                    ),
                             ) {
                                 Text(text = "Удалите товар другого размера", fontSize = 14.sp)
                             }
@@ -319,13 +332,14 @@ fun MenuScreen(
                             Button(
                                 onClick = { viewModel.addToCart(item.id, activeSize) },
                                 shape = RoundedCornerShape(10.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(50.dp)
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(50.dp),
                             ) {
                                 Text(
                                     text = "Добавить в корзину - ${PriceFormatter.format(item.price)}",
-                                    style = MaterialTheme.typography.bodyLarge
+                                    style = MaterialTheme.typography.bodyLarge,
                                 )
                             }
                         } else {
@@ -333,7 +347,7 @@ fun MenuScreen(
                                 amount = amountInCart,
                                 onAdd = { viewModel.addToCart(item.id, activeSize) },
                                 onRemove = { viewModel.removeFromCart(item.id, activeSize) },
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
                             )
                         }
                     }
