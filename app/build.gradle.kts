@@ -59,8 +59,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEa
 
 ktlint {
     android.set(true)
-    // ignoreFailures.set(false)
-    ignoreFailures.set(true)
+    ignoreFailures.set(false)
     reporters {
         reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN)
     }
