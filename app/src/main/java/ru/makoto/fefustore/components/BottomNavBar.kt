@@ -32,58 +32,61 @@ import ru.makoto.fefustore.utils.noRippleClickable
 fun CustomBottomBar(
     navController: NavHostController,
     cartCount: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(Color.White)
-            .navigationBarsPadding()
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .navigationBarsPadding(),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp, bottom = 12.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp, bottom = 12.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             listOf(Destination.MENU, Destination.CART).forEach { destination ->
                 val isSelected = currentRoute == destination.route
                 val contentColor = if (isSelected) Color.Black else Color.Gray
 
                 Column(
-                    modifier = Modifier.noRippleClickable {
-                        if (currentRoute != destination.route) {
-                            navController.navigate(destination.route)
-                        }
-                    },
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier =
+                        Modifier.noRippleClickable {
+                            if (currentRoute != destination.route) {
+                                navController.navigate(destination.route)
+                            }
+                        },
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     if (destination == Destination.CART && cartCount > 0) {
                         BadgedBox(
                             badge = {
                                 Badge(
                                     containerColor = AppColors.BrownPrimary,
-                                    contentColor = AppColors.White
+                                    contentColor = AppColors.White,
                                 ) {
                                     Text(text = cartCount.toString(), fontSize = 10.sp)
                                 }
-                            }
+                            },
                         ) {
                             Icon(
                                 imageVector = destination.icon,
                                 contentDescription = destination.label,
-                                tint = contentColor
+                                tint = contentColor,
                             )
                         }
                     } else {
                         Icon(
                             imageVector = destination.icon,
                             contentDescription = destination.label,
-                            tint = contentColor
+                            tint = contentColor,
                         )
                     }
 
@@ -92,7 +95,7 @@ fun CustomBottomBar(
                     Text(
                         text = destination.label,
                         fontSize = 12.sp,
-                        color = contentColor
+                        color = contentColor,
                     )
                 }
             }

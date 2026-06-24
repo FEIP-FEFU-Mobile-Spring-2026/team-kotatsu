@@ -19,7 +19,7 @@ fun CartTextField(
     placeholder: String,
     singleLine: Boolean,
     modifier: Modifier = Modifier,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
 ) {
     TextField(
         value = value,
@@ -27,14 +27,15 @@ fun CartTextField(
         placeholder = { Text(placeholder, color = AppColors.TextGray) },
         singleLine = singleLine,
         keyboardOptions = keyboardOptions,
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = AppColors.GrayBackground,
-            unfocusedContainerColor = AppColors.GrayBackground,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            cursorColor = AppColors.BrownSecondary
-        ),
+        colors =
+            TextFieldDefaults.colors(
+                focusedContainerColor = AppColors.GrayBackground,
+                unfocusedContainerColor = AppColors.GrayBackground,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                cursorColor = AppColors.BrownSecondary,
+            ),
         shape = RoundedCornerShape(12.dp),
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
     )
 }
