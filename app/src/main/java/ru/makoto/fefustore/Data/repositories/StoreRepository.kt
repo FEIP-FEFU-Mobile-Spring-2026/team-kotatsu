@@ -129,24 +129,11 @@ class StoreRepository
                 }
             }
 
-    /* fun getCartAmount(clothesId: String): Flow<Int> = cartDAO.getItemByClothesId(clothesId).map {
-         if (it.isEmpty())
-             return@map 0
-         return@map it[0].cart.amount
-     }*/
-
         fun getCartAmount(clothesId: String): Flow<Int> =
             cartDAO.getItemByClothesId(clothesId).map { list ->
                 list.sumOf { it.cart.amount }
             }
 
-    /*suspend fun addItemInCart(clothesId: String) {
-        val cartItem = cartDAO.getItemByClothesId(clothesId).first()
-        if (cartItem.isEmpty())
-            cartDAO.insert(CartEntity(clothesId = clothesId, amount = 1))
-        else
-            cartDAO.update(cartItem[0].cart.copy(amount = cartItem[0].cart.amount + 1))
-    }*/
         suspend fun addItemInCart(
             clothesId: String,
             sizeId: String? = null,
@@ -161,15 +148,6 @@ class StoreRepository
             }
         }
 
-    /*    suspend fun removeItemFromCart(clothesId: String) {
-            val cartItem = cartDAO.getItemByClothesId(clothesId).first()
-            if (!cartItem.isEmpty()) {
-                if (cartItem[0].cart.amount > 1)
-                    cartDAO.update(cartItem[0].cart.copy(amount = cartItem[0].cart.amount - 1))
-                else
-                    cartDAO.delete(cartItem[0].cart)
-            }
-        }*/
         suspend fun removeItemFromCart(
             clothesId: String,
             sizeId: String? = null,

@@ -50,11 +50,6 @@ fun CategoryPicker(
                             AppColors.GrayLight
                         },
                     ),
-//                    text = {
-//                CategoryItem(
-//                    title = "Новинки",
-//                    isActive = currentCategory == "",
-//                    onClick = { changeTag("New") }
         ) {
             Text(
                 text = "Новинки",
@@ -62,22 +57,6 @@ fun CategoryPicker(
             )
         }
 
-        /*categories.forEachIndexed { index, category ->
-            val isActive =
-                index + 1 == categories.indexOf(categories.find { it.id == currentCategory }) + 1
-            Tab(
-                selected = isActive,
-                onClick = { changeCategory(category) },
-                modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp),
-                text = {
-                    CategoryItem(
-                        title = category.name,
-                        isActive = isActive,
-                        onClick = { changeCategory(category) }
-                    )
-                }
-            )
-        }*/
         categories.forEach { category ->
             val isActive = category.id == currentCategory
             Tab(
